@@ -499,19 +499,20 @@ def quick_errors(save_fit_true,save_fit, psf_gauss,elliptical):
             if (temp[0].find(column[k]) != -1):
                 for j in range(2, len(temp)):
                     if (j == 2):
-                        if (temp[j].split("(")[1].split(",")[0] == 'None' or temp[j].split("(")[1].split(",")[0] == None):
+                        if (temp[j].split("(")[1].split(",")[0].find('None') != -1 ):#or temp[j].split("(")[1].split(",")[0] == None or type(temp[j].split(",")[0]) == str):
                             temp[j].split("(")[1].split(",")[0] = 0
                         data[k][j - 2] = float(temp[j].split("(")[1].split(",")[0])
                     if (j == len(temp) - 1 and j != 2):
-                        if (temp[j].split(")")[0].find('None') != -1 or temp[j].split(")")[0] == None):
+                        if (temp[j].split(")")[0].find('None') != -1 ):#or temp[j].split(")")[0] == None or type(temp[j].split(")")) == str):
                             temp[j].split(")")[0] = 0
-                        print("****TEST****")
-                        print(data[k][j - 2])
                         data[k][j - 2] = float(temp[j].split(")")[0])
                     if (j > 2 and j < len(temp) - 1):
-                        if (temp[j].split()[0].split(",")[0].find('None') != -1 or temp[j].split()[0].split(",")[0] == None):
-                            temp[j].split()[0].split(",")[0] = 0.
+                        if (temp[j].split()[0].split(",")[0].find('None') != -1 ):#or temp[j].split()[0].split(",")[0] == None or type(temp[j].split()[0].split(",")[0]) == str):
+                            temp[j].split()[0].split(",")[0] = 0
 
+                        print(temp[j].split()[0].split(",")[0])
+                        print(temp[j].split()[0].split(",")[0].find('None'))
+                        print(type(temp[j].split()[0].split(",")[0]))
                         data[k][j - 2] = float(temp[j].split()[0].split(",")[0])
 
     print("\n Parameter results (from the image):\n")
