@@ -444,9 +444,9 @@ def quick_errors(save_fit_true,save_fit, psf_gauss,elliptical):
     dof = len(one_row.split()) - 3
     f.close()
 
-    if (save_fit.find("0") == -1):
+    if (save_fit.find("xr0") == -1):
         print "\n STATISTICS :\n   CASH  = ", cash, "\n   d.o.f : ", dof ,"+ 1", "\n   AIC   = ", cash + 2. * (dof + 1)
-    if(save_fit.find("0") != -1):
+    if(save_fit.find("xr0") != -1):
         print "\n STATISTICS :\n   CASH  = ", cash, "\n   d.o.f : ", dof, "\n   AIC   = ", cash + 2. * dof
     if (save_fit.find("xr") == -1):
         print "\n STATISTICS :\n   CASH  = ", cash, "\n   d.o.f : ", dof, "\n   AIC   = ", cash + 2. * dof

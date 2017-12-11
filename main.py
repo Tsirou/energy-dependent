@@ -61,7 +61,7 @@ if(names.psf_fudge != -1):
 
 
 
-#for t in range(len(names.fit_component)-2,len(names.fit_component)-1):
+#for t in range(len(names.fit_component)-3,len(names.fit_component)):
 for t in range(0,len(names.fit_component)):
 
     plt.clf()
