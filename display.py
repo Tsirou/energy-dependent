@@ -532,7 +532,7 @@ def fits_png(save_path, output_gif_path, fits_files, cash, psr_alpha, tname, zoo
         gaus.append(g1[5])
         gaus.append(g1[6])
 
-        ellipse = Ellipse(xy=(gaus[0], gaus[1]), width=gaus[2], height=gaus[3], angle=gaus[4], edgecolor='k',
+        ellipse = Ellipse(xy=(gaus[0], gaus[1]), width=gaus[2], height=gaus[3], angle=gaus[4], edgecolor='w',
                               fc='None', lw=2)
         ax.add_patch(ellipse)
         ax.plot(gaus[0], gaus[1], 'x', color='k', markersize=10)
@@ -558,8 +558,8 @@ def fits_png(save_path, output_gif_path, fits_files, cash, psr_alpha, tname, zoo
         gaus.append(g1[5])
         gaus.append(g1[6])
 
-        circle_in = Circle((gaus[0], gaus[1]), radius=gaus[2], fc='None', edgecolor='k', lw=1, alpha=0.8)
-        circle_out = Circle((gaus[0], gaus[1]), radius=gaus[3], fc='None', edgecolor='k', lw=1)
+        circle_in = Circle((gaus[0], gaus[1]), radius=gaus[2], fc='None', edgecolor='w', lw=1, alpha=0.8)
+        circle_out = Circle((gaus[0], gaus[1]), radius=gaus[3], fc='None', edgecolor='w', lw=1)
 
         ax.add_patch(circle_in)
         ax.add_patch(circle_out)
@@ -575,7 +575,7 @@ def fits_png(save_path, output_gif_path, fits_files, cash, psr_alpha, tname, zoo
         gaus.append(g1[5])
         gaus.append(g1[6])
 
-        circle = Circle((gaus[0], gaus[1]), radius=gaus[2], fc='k', edgecolor='k', lw=3, alpha=0.3)
+        circle = Circle((gaus[0], gaus[1]), radius=gaus[2], fc='k', edgecolor='w', lw=3, alpha=0.3)
 
         ax.add_patch(circle)
         ax.plot(gaus[0], gaus[1], 'x', color='k', ms=10)

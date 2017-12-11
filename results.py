@@ -433,7 +433,7 @@ def quick_errors(save_fit_true,save_fit, psf_gauss,elliptical):
 
     print("\n ***********\n **********\n ________________________\n ####### Results ######\n")
     print("Object      : " + names.source[names.analysis] + "\n")
-    print("Fit : " + names.tags[names.analysis] + "with " + names.fit_component[names.analysis])
+    print("Fit : " + names.tags[names.analysis] + " with " + names.fit_component[names.analysis])
     print("Alpha parameter : " + str(names.alpha_factor_pa[names.analysis]))
 
     nf, cash_stats = np.loadtxt(saved_fitinfo, dtype=float, usecols=(0, 1), unpack=True, skiprows=1)
@@ -444,11 +444,11 @@ def quick_errors(save_fit_true,save_fit, psf_gauss,elliptical):
     dof = len(one_row.split()) - 3
     f.close()
 
-    if (save_fit.find("xr") != -1 & save_fit.find("0") == -1):
+    if (save_fit.find("0") == -1):
         print "\n STATISTICS :\n   CASH  = ", cash, "\n   d.o.f : ", dof ,"+ 1", "\n   AIC   = ", cash + 2. * (dof + 1)
-    elif(save_fit.find("xr") != -1 & save_fit.find("0") != -1):
+    if(save_fit.find("0") != -1):
         print "\n STATISTICS :\n   CASH  = ", cash, "\n   d.o.f : ", dof, "\n   AIC   = ", cash + 2. * dof
-    else:
+    if (save_fit.find("xr") == -1):
         print "\n STATISTICS :\n   CASH  = ", cash, "\n   d.o.f : ", dof, "\n   AIC   = ", cash + 2. * dof
 
 
@@ -499,15 +499,17 @@ def quick_errors(save_fit_true,save_fit, psf_gauss,elliptical):
             if (temp[0].find(column[k]) != -1):
                 for j in range(2, len(temp)):
                     if (j == 2):
-                        if (temp[j].split("(")[1].split(",")[0] == 'None'):
+                        if (temp[j].split("(")[1].split(",")[0] == 'None' or temp[j].split("(")[1].split(",")[0] == None):
                             temp[j].split("(")[1].split(",")[0] = 0
                         data[k][j - 2] = float(temp[j].split("(")[1].split(",")[0])
                     if (j == len(temp) - 1 and j != 2):
-                        if (temp[j].split(")")[0] == None):
+                        if (temp[j].split(")")[0].find('None') != -1 or temp[j].split(")")[0] == None):
                             temp[j].split(")")[0] = 0
+                        print("****TEST****")
+                        print(data[k][j - 2])
                         data[k][j - 2] = float(temp[j].split(")")[0])
                     if (j > 2 and j < len(temp) - 1):
-                        if (temp[j].split()[0].split(",")[0] == None):
+                        if (temp[j].split()[0].split(",")[0].find('None') != -1 or temp[j].split()[0].split(",")[0] == None):
                             temp[j].split()[0].split(",")[0] = 0.
 
                         data[k][j - 2] = float(temp[j].split()[0].split(",")[0])

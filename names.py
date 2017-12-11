@@ -43,7 +43,7 @@ factor_pix2deg    = 0.
 
 
 ###############################################
-analysis          = 0
+analysis          = 1
 # Tag for the different analyses :
 #     0    : PA 2.5deg std
 #     1    : PA 2.5deg 300 - 600 GeV
@@ -100,7 +100,7 @@ analysis_energy_high       = [100., 0.6, 0.9, 3.0, 100.]
 
 source            = ["MSH15-52---std","MSH15-52---300_600GeV", "MSH15-52---600_900GeV","MSH15-52---0.9-3.0TeV","MSH15-52---gt3TeV"]
 tags              = ["std", "0-3_0-6TeV", "0-6_0-9TeV", "0-9_3-0TeV", "gt3-0TeV"]
-fit_component     = ["xr0","xr0-2G","xr","xr-2G","xr-G1","xr-sh","xr-dc"]
+fit_component     = ["xr-G1","xr-sh","xr-dc"]#["xr0","xr0-2G","xr","xr-2G","xr-G1","xr-sh","xr-dc"]
 #fit_component     = ["xr_psf","xr_psf","xr-2G_psf","xr-G1_psf","xr-sh_psf","xr-dc_psf"]
 #fit_component     = ["xr-2G_bkg_d"]
 
