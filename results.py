@@ -1,4 +1,4 @@
-import sys,os
+import sys,os,string
 import conversion
 import names 
 
@@ -509,10 +509,14 @@ def quick_errors(save_fit_true,save_fit, psf_gauss,elliptical):
                     if (j > 2 and j < len(temp) - 1):
                         if (temp[j].split()[0].split(",")[0].find('None') != -1 ):#or temp[j].split()[0].split(",")[0] == None or type(temp[j].split()[0].split(",")[0]) == str):
                             temp[j].split()[0].split(",")[0] = 0
-
-                        print(temp[j].split()[0].split(",")[0])
-                        print(temp[j].split()[0].split(",")[0].find('None'))
-                        print(type(temp[j].split()[0].split(",")[0]))
+                        #     print("Hello")
+                        #     print(temp[j].split()[0].split(",")[0])
+                        #     print(len(temp[j].split()[0].split()))
+                        #     print("Goodbye")
+                        #
+                        # print(temp[j].split()[0].split(",")[0])
+                        # print(temp[j].split()[0].split(",")[0].find('None'))
+                        # print(type(temp[j].split()[0].split(",")[0]))
                         data[k][j - 2] = float(temp[j].split()[0].split(",")[0])
 
     print("\n Parameter results (from the image):\n")

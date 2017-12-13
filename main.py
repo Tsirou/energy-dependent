@@ -59,10 +59,10 @@ rebinning_psf(factor_psf,hdulist,hdu)
 if(names.psf_fudge != -1):
     fit_fudged_psf(dim_im)
 
+# for t in range(0,len(names.fit_component)):
+#for t in range(len(names.fit_component)-3,len(names.fit_component)):
+for t in range(0, len(names.fit_component)-3):
 
-
-for t in range(len(names.fit_component)-3,len(names.fit_component)):
-    #for t in range(0,len(names.fit_component)):
 
     plt.clf()
     plt.cla()
@@ -202,7 +202,7 @@ for t in range(len(names.fit_component)-3,len(names.fit_component)):
     plt.figure()
 
 
-# For the results --> plots and confidence intervals
+    # For the results --> plots and confidence intervals
 
     print "\n"
     progress(t,len(names.fit_component),tname+'\n')
@@ -222,11 +222,11 @@ for t in range(len(names.fit_component)-3,len(names.fit_component)):
 
     print "\n alpha = ",psr_factor,"CASH = ",cash_stats[-1]
 
-    quick_results('yes',gauss,name_file,component,psr_factor,cash_stats[-1],-1)
-    quick_errors('yes',tname, gauss,component)
+    #quick_results('yes',gauss,name_file,component,psr_factor,cash_stats[-1],-1)
+    #quick_errors('yes',tname, gauss,component)
 
-    fits_png(names.save_path[analysis],names.results_path,name_file,cash_stats[-1],psr_factor, tname + '_PA','all_n',component,'n')
-    fits_png(names.save_path[analysis], names.results_path, name_file, cash_stats[-1], psr_factor,tname + '_PA', 'all_n', component, 'y')
+    fits_png(names.save_path[analysis],names.results_path,name_file,cash_stats[-1],psr_factor, tname + '_PA','all_y',component,'n')
+    fits_png(names.save_path[analysis], names.results_path, name_file, cash_stats[-1], psr_factor,tname + '_PA', 'all_y', component, 'y')
 
 #==============================================================================
 # x_slice,y_slice,L_slice,l_slice,dev_slice     =  np.loadtxt(names.path + names.filename_slice,dtype=float,usecols=(0,1,2,3,4),unpack=True,skiprows=1)

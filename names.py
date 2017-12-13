@@ -20,7 +20,7 @@ display_ds9          = 'y' # yes (y) or no (n) for displaying with ds9 the fit s
 circular_selection   = 'n' # yes (y) or no (n) for selecting a circular region for fitting
 bkg_thaw             = 'n' # yes (y) or no (n) for thawing the background amplitude
 bkg_amplitude        = 1.0 # usually set to 1.0 but could also be +/- 2%
-confidence_levels    = 'y' # yes (y) or no (n) for computing the confidence intervals (time-consuming!)
+confidence_levels    = 'n' # yes (y) or no (n) for computing the confidence intervals (time-consuming!)
 
 
 r_psf_0           = 0
@@ -43,7 +43,7 @@ factor_pix2deg    = 0.
 
 
 ###############################################
-analysis          = 1
+analysis          = 4
 # Tag for the different analyses :
 #     0    : PA 2.5deg std
 #     1    : PA 2.5deg 300 - 600 GeV
@@ -81,16 +81,16 @@ if(analysis == 4 ):
 cb_extrema              = np.ndarray((nb_pa_analyses, 2))
 cb_extrema[0,:]         = [1.0, 4.0]
 cb_extrema[1,:]         = [1.0, 2.0]
-cb_extrema[2,:]         = [1.0, 2.0]
-cb_extrema[3,:]         = [1.0, 3.0]
-cb_extrema[4,:]         = [1.0, 2.0]
+cb_extrema[2,:]         = [1.0, 1.6]
+cb_extrema[3,:]         = [1.0, 2.0]
+cb_extrema[4,:]         = [1.0, 1.6]
 
 cb_resids               = np.ndarray((nb_pa_analyses, 2))
-cb_resids[0,:]         = [-10.0, 10.0]
-cb_resids[1,:]         = [-4.0, 4.0]
-cb_resids[2,:]         = [-4.0, 4.0]
-cb_resids[3,:]         = [-4.0, 4.0]
-cb_resids[4,:]         = [-4.0, 4.0]
+cb_resids[0,:]          = [-10.0, 10.0]
+cb_resids[1,:]          = [-4.0, 4.0]
+cb_resids[2,:]          = [-4.0, 4.0]
+cb_resids[3,:]          = [-4.0, 4.0]
+cb_resids[4,:]          = [-3.0, 3.0]
 
 
 #For the exposure_gamma.py script

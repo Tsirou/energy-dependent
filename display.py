@@ -537,12 +537,18 @@ def fits_png(save_path, output_gif_path, fits_files, cash, psr_alpha, tname, zoo
         ax.add_patch(ellipse)
         ax.plot(gaus[0], gaus[1], 'x', color='k', markersize=10)
 
-        x_plane = np.arange(401)
-        x1_plane = 145.74
-        x2_plane = 383.74
-        y1_plane = 373.41
-        y2_plane = 228.31
-        y_plane = affine(x_plane, x1_plane, y1_plane, x2_plane, y2_plane)
+        if (cb_reverse.find('y') != -1):
+            ellipse = Ellipse(xy=(gaus[0], gaus[1]), width=gaus[2], height=gaus[3], angle=gaus[4], edgecolor='k',
+                              fc='None', lw=2)
+            ax.add_patch(ellipse)
+            ax.plot(gaus[0], gaus[1], 'x', color='w', markersize=10)
+
+    x_plane = np.arange(401)
+    x1_plane = 145.74
+    x2_plane = 383.74
+    y1_plane = 373.41
+    y2_plane = 228.31
+    y_plane = affine(x_plane, x1_plane, y1_plane, x2_plane, y2_plane)
 
     if (zoom.find('all_y') != -1):
         ax.plot(x_plane, y_plane, '--', linewidth=3.0, color='c', label="Galactic plane")
@@ -560,10 +566,16 @@ def fits_png(save_path, output_gif_path, fits_files, cash, psr_alpha, tname, zoo
 
         circle_in = Circle((gaus[0], gaus[1]), radius=gaus[2], fc='None', edgecolor='w', lw=1, alpha=0.8)
         circle_out = Circle((gaus[0], gaus[1]), radius=gaus[3], fc='None', edgecolor='w', lw=1)
-
         ax.add_patch(circle_in)
         ax.add_patch(circle_out)
         ax.plot(gaus[0], gaus[1], 'x', color='k', markersize=10)
+
+        if (cb_reverse.find('y') != -1):
+            circle_in = Circle((gaus[0], gaus[1]), radius=gaus[2], fc='None', edgecolor='k', lw=1, alpha=0.8)
+            circle_out = Circle((gaus[0], gaus[1]), radius=gaus[3], fc='None', edgecolor='k', lw=1)
+            ax.add_patch(circle_in)
+            ax.add_patch(circle_out)
+            ax.plot(gaus[0], gaus[1], 'x', color='k', markersize=10)
 
     if (tname.find("dc") != -1):
         gaus = []
@@ -576,16 +588,23 @@ def fits_png(save_path, output_gif_path, fits_files, cash, psr_alpha, tname, zoo
         gaus.append(g1[6])
 
         circle = Circle((gaus[0], gaus[1]), radius=gaus[2], fc='k', edgecolor='w', lw=3, alpha=0.3)
-
         ax.add_patch(circle)
         ax.plot(gaus[0], gaus[1], 'x', color='k', ms=10)
+
+        if (cb_reverse.find('y') != -1):
+            circle = Circle((gaus[0], gaus[1]), radius=gaus[2], fc='k', edgecolor='k', lw=3, alpha=0.3)
+            ax.add_patch(circle)
+            ax.plot(gaus[0], gaus[1], 'x', color='k', ms=10)
 
     if (tname.find("dc") == -1 and tname.find("sh") == -1 and tname.find("G") == -1):
         gaus = np.zeros(6)
         gaus[5] = (g1[0])
 
-
     ax.annotate(r"$\alpha$       : " + str(psr_alpha), (zoom_1 + 5, zoom_1 + 5), fontsize=20, color='w')
+
+    if(cb_reverse.find('y') != -1):
+        ax.annotate(r"$\alpha$       : " + str(psr_alpha), (zoom_1 + 5, zoom_1 + 5), fontsize=20, color='k')
+
 
 
     ax.tick_params(axis='both', which='both', labelsize=20, color='w')
