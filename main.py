@@ -59,9 +59,10 @@ rebinning_psf(factor_psf,hdulist,hdu)
 if(names.psf_fudge != -1):
     fit_fudged_psf(dim_im)
 
-# for t in range(0,len(names.fit_component)):
-#for t in range(len(names.fit_component)-3,len(names.fit_component)):
-for t in range(0, len(names.fit_component)-3):
+component_list_index_start   = 2 # len(names.fit_component) - 2
+component_list_index_end     = 4 # len(names.fit_component)
+
+for t in range(component_list_index_start, component_list_index_end):
 
 
     plt.clf()
@@ -130,7 +131,7 @@ for t in range(0, len(names.fit_component)-3):
     #         #plt.annotate("\n\n"+str(psr_alpha[j]),(psr_alpha[j],cash[j]),fontsize=15,color='DarkSeaGreen')
     #
     # plt.savefig(names.save_path[analysis] + 'cash_alpha' + tname + '_wide'+'.pdf',dpi=100)
-
+    #
 
 
     plt.clf()
@@ -151,7 +152,7 @@ for t in range(0, len(names.fit_component)-3):
     # for f in range(0,steps + 1):
     #     print "\n"
     #     progress(f,steps + 1,tname+'\n')
-    #     psr_factor = f * 0.01 + 0.8 #0.1
+    #     psr_factor = f * 0.01 + 0.1
     #
     #     xray_map_resize(tname)
     #     #Multiplying it by the distance to the pulsar to a power of psr_factor
@@ -222,11 +223,15 @@ for t in range(0, len(names.fit_component)-3):
 
     print "\n alpha = ",psr_factor,"CASH = ",cash_stats[-1]
 
-    #quick_results('yes',gauss,name_file,component,psr_factor,cash_stats[-1],-1)
-    #quick_errors('yes',tname, gauss,component)
+    quick_results('yes',gauss,name_file,component,psr_factor,cash_stats[-1],-1)
+    quick_errors('yes',tname, gauss,component, t)
 
-    fits_png(names.save_path[analysis],names.results_path,name_file,cash_stats[-1],psr_factor, tname + '_PA','all_y',component,'n')
-    fits_png(names.save_path[analysis], names.results_path, name_file, cash_stats[-1], psr_factor,tname + '_PA', 'all_y', component, 'y')
+    fits_png(names.save_path[analysis],names.results_path,name_file,cash_stats[-1],psr_factor, tname + '_PA','all_n',component,'n')
+    fits_png(names.save_path[analysis], names.results_path, name_file, cash_stats[-1], psr_factor,tname + '_PA', 'all_n', component, 'y')
+    fits_png(names.save_path[analysis], names.results_path, name_file, cash_stats[-1], psr_factor, tname + '_PA', 'all_y',
+         component, 'n')
+    fits_png(names.save_path[analysis], names.results_path, name_file, cash_stats[-1], psr_factor, tname + '_PA', 'all_y',
+         component, 'y')
 
 #==============================================================================
 # x_slice,y_slice,L_slice,l_slice,dev_slice     =  np.loadtxt(names.path + names.filename_slice,dtype=float,usecols=(0,1,2,3,4),unpack=True,skiprows=1)

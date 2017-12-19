@@ -412,7 +412,7 @@ def quick_results(save_fit, psf_gauss, name_file, elliptical,alpha,stat,dof):
     return
 
 
-def quick_errors(save_fit_true,save_fit, psf_gauss,elliptical):
+def quick_errors(save_fit_true,save_fit, psf_gauss,elliptical, configuration):
     if (save_fit_true.find("yes") != -1):
         nb_displays = 2
         temporary = sys.stdout
@@ -434,7 +434,7 @@ def quick_errors(save_fit_true,save_fit, psf_gauss,elliptical):
     print("\n ***********\n **********\n ________________________\n ####### Results ######\n")
     print("Object      : " + names.source[names.analysis] + "\n")
     print("Fit : " + names.tags[names.analysis] + " with " + names.fit_component[names.analysis])
-    print("Alpha parameter : " + str(names.alpha_factor_pa[names.analysis]))
+    print("Alpha parameter : " + str(names.alpha_factor_pa[configuration]))
 
     nf, cash_stats = np.loadtxt(saved_fitinfo, dtype=float, usecols=(0, 1), unpack=True, skiprows=1)
     cash = cash_stats[-1]

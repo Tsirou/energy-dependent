@@ -20,7 +20,7 @@ display_ds9          = 'y' # yes (y) or no (n) for displaying with ds9 the fit s
 circular_selection   = 'n' # yes (y) or no (n) for selecting a circular region for fitting
 bkg_thaw             = 'n' # yes (y) or no (n) for thawing the background amplitude
 bkg_amplitude        = 1.0 # usually set to 1.0 but could also be +/- 2%
-confidence_levels    = 'n' # yes (y) or no (n) for computing the confidence intervals (time-consuming!)
+confidence_levels    = 'y' # yes (y) or no (n) for computing the confidence intervals (time-consuming!)
 
 
 r_psf_0           = 0
@@ -43,7 +43,7 @@ factor_pix2deg    = 0.
 
 
 ###############################################
-analysis          = 4
+analysis          = 1
 # Tag for the different analyses :
 #     0    : PA 2.5deg std
 #     1    : PA 2.5deg 300 - 600 GeV
@@ -66,16 +66,19 @@ dim_for_a         = '400x400'
 hdu_ext = 1  # 0 for gammapy maps, 1 for PA
 
 # psf_fudge and bkg_amplitude arguments for the systematics estimation
-if(analysis == 0 ):
-    alpha_factor_pa   = [0.0, 0.0, 1.28, 1.28, 1.27, 1.06, 0.99]
-if(analysis == 1 ):
-    alpha_factor_pa   = [0.0, 0.0, 1.48, 1.38, 1.37, 1.23, 1.23]
-if(analysis == 2 ):
-    alpha_factor_pa   = [0.0, 0.0, 1.19, 1.05, 1.01, 0.99, 1.03]
-if(analysis == 3 ):
-    alpha_factor_pa   = [0.0, 0.0, 1.37, 1.7, 1.9, 1.32, 1.7]
-if(analysis == 4 ):
-    alpha_factor_pa   = [0.0, 0.0, 0.69, 0.69, 0.57, 0.2, 0.57]
+# if(analysis == 0 ):
+#     alpha_factor_pa   = [0.0, 0.0, 1.28, 1.28, 1.27, 1.06, 0.99]
+# if(analysis == 1 ):
+#     alpha_factor_pa   = [0.0, 0.0, 1.48, 1.38, 1.37, 1.23, 1.23]
+# if(analysis == 2 ):
+#     alpha_factor_pa   = [0.0, 0.0, 1.19, 1.05, 1.01, 0.99, 1.03]
+# if(analysis == 3 ):
+#     alpha_factor_pa   = [0.0, 0.0, 1.37, 1.7, 1.9, 1.32, 1.7]
+# if(analysis == 4 ):
+#     alpha_factor_pa   = [0.0, 0.0, 0.69, 0.27, 0.15, 0.17, 0.54]
+
+alpha_factor_pa   = [0.0, 0.0, 1.3, 1.3, 1.3, 1.3, 1.3] # when alpha is frozen to ~ the best fit value for the std model + 2G
+
 
 # Display GIF normalisation for the colorbar
 cb_extrema              = np.ndarray((nb_pa_analyses, 2))
@@ -150,4 +153,4 @@ filename_slice    = ""
 # Fit initial parameters
 
 exposure_amplitude     = [1.0e-12, 1.0e-9, 1.0e-10, 1.0e-11,1.0e-12]
-G_comp_ampl            = [10., 1., 1., 1., 1.]
+G_comp_ampl            = [10., 1., 1., 1., 0.5]
