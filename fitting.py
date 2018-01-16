@@ -1061,7 +1061,7 @@ def fit_msh1552_xfact_comp(dim,bkg_option,psf_gauss,psr_alpha,xampl):
             gcomp.ellip  =   0
             gcomp.theta  =   0
             gcomp.ampl   =   names.G_comp_ampl[names.analysis]
-            gcomp.fwhm   =   50.
+            gcomp.fwhm   =   20.
             sherpa.set_par(gcomp.ampl, min=0.)
             sherpa.set_par(gcomp.xpos, min = dim/4., max = 3 * dim/4.)
             sherpa.set_par(gcomp.ypos, min = dim/4., max = 3 * dim/4.)

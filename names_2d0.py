@@ -109,7 +109,7 @@ fit_component     = ["xr0","xr0-2G","xr","xr-2G","xr-G1","xr-sh","xr-dc"]
 
 
 
-directory         = ["energy-dependent/"] * nb_pa_analyses
+directory         = ["energy-dependent/2d0/"] * nb_pa_analyses
 
 path_data         = "/home/tsirou/Documents/Analyses/DATA/"
 path_g            = ["/home/tsirou/Documents/Analyses/MSH_15-52/"] * (nb_pa_analyses)
@@ -128,13 +128,13 @@ path_runs         = [p + "runs/" for p in path]
 save_path         = [p + "Fit/" for p in path]
 save_path_gif     = [s + 'GIF/' for s in save_path]
 # Path for all the results txt files (global)
-results_path      = "/home/tsirou/Documents/Analyses/Results/Energy-dependent/"
+results_path      = "/home/tsirou/Documents/Analyses/Results/Energy-dependent/2d0/"
 
-filename_runs     = ["Results_MSH_15_52_ModelPlus_Std_mergedrun_list.txt", "Results_MSH_15_52_300_600GeV_Custom_mergedrun_list.txt", "Results_MSH_15_52_600_900GeV_Custom_mergedrun_list.txt", "Results_MSH_15_52_0_9_3TeV_Custom_mergedrun_list.txt", "Results_MSH_15_52_gt3TeV_Custom_mergedrun_list.txt"]
+filename_runs     = ["Results_MSH_15_52_std_2d0_ModelPlus_Std_mergedrun_list.txt", "Results_MSH_15_52_300_600GeV_2d0_Custom_mergedrun_list.txt", "Results_MSH_15_52_600_900GeV_2d0_Custom_mergedrun_list.txt", "Results_MSH_15_52_0_9_3_0TeV_2d0_Custom_mergedrun_list.txt"]
 
-filename_bkg      = ["Results_MSH_15_52_ModelPlus_Std_mergedbackground.fits", "Results_MSH_15_52_300_600GeV_Custom_mergedbackground.fits", "Results_MSH_15_52_600_900GeV_Custom_mergedbackground.fits", "Results_MSH_15_52_0_9_3TeV_Custom_mergedbackground.fits", "Results_MSH_15_52_gt3TeV_Custom_mergedbackground.fits"]
-filename_gamma    = ["Results_MSH_15_52_ModelPlus_Std_mergedgamma-like.fits", "Results_MSH_15_52_300_600GeV_Custom_mergedgamma-like.fits", "Results_MSH_15_52_600_900GeV_Custom_mergedgamma-like.fits", "Results_MSH_15_52_0_9_3TeV_Custom_mergedgamma-like.fits", "Results_MSH_15_52_gt3TeV_Custom_mergedgamma-like.fits"]
-filename_excess   = ["Results_MSH_15_52_ModelPlus_Std_mergedexcess.fits", "Results_MSH_15_52_300_600GeV_Custom_mergedexcess.fits", "Results_MSH_15_52_600_900GeV_Custom_mergedexcess.fits", "Results_MSH_15_52_0_9_3TeV_Custom_mergedexcess.fits", "Results_MSH_15_52_gt3TeV_Custom_mergedexcess.fits"]
+filename_bkg      = ["Results_MSH_15_52_std_2d0_ModelPlus_Std_mergedbackground.fits", "Results_MSH_15_52_300_600GeV_2d0_Custom_mergedbackground.fits", "Results_MSH_15_52_600_900GeV_2d0_Custom_mergedbackground.fits", "Results_MSH_15_52_0_9_3_0TeV_2d0_Custom_mergedbackground.fits", "Results_MSH_15_52_gt3_0TeV_2d0_Custom_mergedbackground.fits"]
+filename_gamma    = ["Results_MSH_15_52_std_2d0_ModelPlus_Std_mergedgamma-like.fits", "Results_MSH_15_52_300_600GeV_2d0_Custom_mergedgamma-like.fits", "Results_MSH_15_52_600_900GeV_2d0_Custom_mergedgamma-like.fits", "Results_MSH_15_52_0_9_3_0TeV_2d0_Custom_mergedgamma-like.fits", "Results_MSH_15_52_gt3_0TeV_2d0_Custom_mergedgamma-like.fits"]
+filename_excess   = ["Results_MSH_15_52_std_2d0_ModelPlus_Std_mergedexcess.fits", "Results_MSH_15_52_300_600GeV_2d0_Custom_mergedexcess.fits", "Results_MSH_15_52_600_900GeV_2d0_Custom_mergedexcess.fits", "Results_MSH_15_52_0_9_3_0TeV_2d0_Custom_mergedexcess.fits", "Results_MSH_15_52_gt3_0TeV_2d0_Custom_mergedexcess.fits"]
 
 filename_psf      = ["psf_std.fits", "psf_300_600GeV.fits", "psf_600_900GeV.fits", "psf_0_9_3TeV.fits", "psf_gt3TeV.fits"]
 
