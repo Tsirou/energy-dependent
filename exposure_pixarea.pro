@@ -1,6 +1,6 @@
 PRO exposure_pixarea
 
-  path_exposure = "/home/tsirou/Documents/Analyses/MSH_15-52/energy-dependent/exposure/"
+  path_exposure = "/home/tsirou/Documents/Analyses/MSH_15-52/energy-dependent/2d0/exposure/"
   dim_pix       = 400
   ra            = 228.5290
   dec           = -59.1575

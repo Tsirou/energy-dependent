@@ -45,11 +45,11 @@ factor_pix2deg    = 0.
 ###############################################
 analysis          = 1
 # Tag for the different analyses :
-#     0    : PA 2.5deg std
-#     1    : PA 2.5deg 300 - 600 GeV
-#     2    : PA 2.5deg 600 - 900 GeV
-#     3    : PA 2.5deg 0.9 - 3.0 TeV
-#     4    : PA 2.5deg > 3.0 TeV
+#     0    : PA 2.0deg std
+#     1    : PA 2.0deg 300 - 600 GeV
+#     2    : PA 2.0deg 600 - 900 GeV
+#     3    : PA 2.0deg 0.9 - 3.0 TeV
+#     4    : PA 2.0deg > 3.0 TeV
 ###############################################
 
 nb_pa_analyses    = 5
@@ -109,7 +109,7 @@ fit_component     = ["xr0","xr0-2G","xr","xr-2G","xr-G1","xr-sh","xr-dc"]
 
 
 
-directory         = ["energy-dependent/"] * nb_pa_analyses
+directory         = ["energy-dependent/2d0/"] * nb_pa_analyses
 
 path_data         = "/home/tsirou/Documents/Analyses/DATA/"
 path_g            = ["/home/tsirou/Documents/Analyses/MSH_15-52/"] * (nb_pa_analyses)
@@ -128,13 +128,13 @@ path_runs         = [p + "runs/" for p in path]
 save_path         = [p + "Fit/" for p in path]
 save_path_gif     = [s + 'GIF/' for s in save_path]
 # Path for all the results txt files (global)
-results_path      = "/home/tsirou/Documents/Analyses/Results/Energy-dependent/"
+results_path      = "/home/tsirou/Documents/Analyses/Results/Energy-dependent/2d0/"
 
-filename_runs     = ["Results_MSH_15_52_ModelPlus_Std_mergedrun_list.txt", "Results_MSH_15_52_300_600GeV_Custom_mergedrun_list.txt", "Results_MSH_15_52_600_900GeV_Custom_mergedrun_list.txt", "Results_MSH_15_52_0_9_3TeV_Custom_mergedrun_list.txt", "Results_MSH_15_52_gt3TeV_Custom_mergedrun_list.txt"]
+filename_runs     = ["Results_MSH_15_52_std_2d0_ModelPlus_Std_mergedrun_list.txt", "Results_MSH_15_52_300_600GeV_2d0_Custom_mergedrun_list.txt", "Results_MSH_15_52_600_900GeV_2d0_Custom_mergedrun_list.txt", "Results_MSH_15_52_0_9_3_0TeV_2d0_Custom_mergedrun_list.txt", "Results_MSH_15_52_gt3_0TeV_2d0_Custom_mergedrun_list.txt"]
 
-filename_bkg      = ["Results_MSH_15_52_ModelPlus_Std_mergedbackground.fits", "Results_MSH_15_52_300_600GeV_Custom_mergedbackground.fits", "Results_MSH_15_52_600_900GeV_Custom_mergedbackground.fits", "Results_MSH_15_52_0_9_3TeV_Custom_mergedbackground.fits", "Results_MSH_15_52_gt3TeV_Custom_mergedbackground.fits"]
-filename_gamma    = ["Results_MSH_15_52_ModelPlus_Std_mergedgamma-like.fits", "Results_MSH_15_52_300_600GeV_Custom_mergedgamma-like.fits", "Results_MSH_15_52_600_900GeV_Custom_mergedgamma-like.fits", "Results_MSH_15_52_0_9_3TeV_Custom_mergedgamma-like.fits", "Results_MSH_15_52_gt3TeV_Custom_mergedgamma-like.fits"]
-filename_excess   = ["Results_MSH_15_52_ModelPlus_Std_mergedexcess.fits", "Results_MSH_15_52_300_600GeV_Custom_mergedexcess.fits", "Results_MSH_15_52_600_900GeV_Custom_mergedexcess.fits", "Results_MSH_15_52_0_9_3TeV_Custom_mergedexcess.fits", "Results_MSH_15_52_gt3TeV_Custom_mergedexcess.fits"]
+filename_bkg      = ["Results_MSH_15_52_std_2d0_ModelPlus_Std_mergedbackground.fits", "Results_MSH_15_52_300_600GeV_2d0_Custom_mergedbackground.fits", "Results_MSH_15_52_600_900GeV_2d0_Custom_mergedbackground.fits", "Results_MSH_15_52_0_9_3_0TeV_2d0_Custom_mergedbackground.fits", "Results_MSH_15_52_gt3_0TeV_2d0_Custom_mergedbackground.fits"]
+filename_gamma    = ["Results_MSH_15_52_std_2d0_ModelPlus_Std_mergedgamma-like.fits", "Results_MSH_15_52_300_600GeV_2d0_Custom_mergedgamma-like.fits", "Results_MSH_15_52_600_900GeV_2d0_Custom_mergedgamma-like.fits", "Results_MSH_15_52_0_9_3_0TeV_2d0_Custom_mergedgamma-like.fits", "Results_MSH_15_52_gt3_0TeV_2d0_Custom_mergedgamma-like.fits"]
+filename_excess   = ["Results_MSH_15_52_std_2d0_ModelPlus_Std_mergedexcess.fits", "Results_MSH_15_52_300_600GeV_2d0_Custom_mergedexcess.fits", "Results_MSH_15_52_600_900GeV_2d0_Custom_mergedexcess.fits", "Results_MSH_15_52_0_9_3_0TeV_2d0_Custom_mergedexcess.fits", "Results_MSH_15_52_gt3_0TeV_2d0_Custom_mergedexcess.fits"]
 
 filename_psf      = ["psf_std.fits", "psf_300_600GeV.fits", "psf_600_900GeV.fits", "psf_0_9_3TeV.fits", "psf_gt3TeV.fits"]
 
@@ -142,6 +142,7 @@ filename_psf      = ["psf_std.fits", "psf_300_600GeV.fits", "psf_600_900GeV.fits
 filename_expo     = [""] * (nb_pa_analyses)
 for a in range(0,nb_pa_analyses):
     filename_expo[a]     = 'exposure_map_' + tags[a] + '_PApix' + '.fits.gz'
+    #filename_expo[a] = 'exposure_map_' + tags[a] + '.fits'
 
 # For the X-ray templates of MSH 15-52
 filename_thresh   = ["MSH1552_Chandra_v0_4-7keV_thresh_exp8_100x100.fits.gz"] * (nb_pa_analyses)
@@ -154,3 +155,9 @@ filename_slice    = ""
 
 exposure_amplitude     = [1.0e-12, 1.0e-9, 1.0e-10, 1.0e-11,1.0e-12]
 G_comp_ampl            = [10., 1., 1., 1., 0.5]
+
+
+# Analysis pointing coordinates
+ra_pt   = 228.5290
+dec_pt  = - 59.1575
+res_ana = 0.01

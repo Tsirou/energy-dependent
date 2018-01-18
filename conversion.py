@@ -351,3 +351,17 @@ def Hermite_polynoms(x,n):
         H = factorial(n) * sum_H
 
     return H
+
+
+def pixarea_correction(exposure_fits, ra, dec, resolution, corr_exposure_fits):
+
+    dimension            = len(exposure_fits)
+
+    for i in range(0, dimension):
+        corr_exposure_fits[:][i]   = np.cos( (-1.0 * dec - (i - (dimension/2. - 0.5)) * resolution) / 180. * np.pi )
+
+    corr_exposure_fits[:][:] = corr_exposure_fits[:][:] / (np.cos( (-1.0 * dec) / 180. * np.pi ))
+
+    corr_exposure_fits[:][:] = corr_exposure_fits[:][:] * exposure_fits[:][:]
+
+    return corr_exposure_fits

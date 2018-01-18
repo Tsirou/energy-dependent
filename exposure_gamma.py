@@ -14,7 +14,8 @@ from gammapy.catalog import SourceCatalogGammaCat, SourceCatalogHGPS
 from gammapy.cube import exposure_cube, SkyCube, StackedObsCubeMaker
 from gammapy.irf import EffectiveAreaTable2D
 
-from conversion import progress
+from conversion import progress, pixarea_correction
+from astropy.io import fits
 
 ######################################################################################
 # Script for generating exposure maps with gammapy for the energy dependent analyses #
@@ -102,3 +103,21 @@ images['exposure'].plot(add_cbar=True,cmap='viridis')
 images['exposure'].write(names.path_expo[names.analysis] + 'exposure_map_'+names.tags[names.analysis]+'.fits', overwrite=True)
 
 plt.clf()
+
+
+# PROSOXI : should change names.filename_expo for the exposure maps without the applied correction in the names.py file!!!
+
+hduexp             = fits.open(names.path_expo[names.analysis] + names.filename_expo[names.analysis])
+
+dimension = len(hduexp[0].data)
+
+corr_exposure_fits = np.ndarray((dimension, dimension))
+
+corr_exposure_fits = pixarea_correction(hduexp[0].data, names.ra_pt, names.dec_pt, names.res_ana, corr_exposure_fits)
+
+hduexp[0].data   = corr_exposure_fits[:,:]
+
+hduexp.writeto(names.path_expo[names.analysis] + 'exposure_map_' + names.tags[names.analysis] + '_PApix' + '.fits.gz', overwrite=True)
+
+hduexp.close()
+
