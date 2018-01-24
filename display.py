@@ -654,3 +654,23 @@ def fits_png(save_path, output_gif_path, fits_files, cash, psr_alpha, tname, zoo
     hdu_gif_model.close()
     hdu_gif_resid.close()
 
+
+
+def slice_energy_plot(E_cuts, colors):
+
+    bins   = len(E_cuts) - 1
+
+    for i in range(0, bins):
+        plt.axvspan(E_cuts[i], E_cuts[i+1], color=colors[i], linestyle='solid', alpha=0.2)
+
+    return
+
+def slice_label_excess_plot(E_cuts, Ex_slices, X_gamma, colors):
+
+    for i in range(0,len(Ex_slices) -1):
+
+        diff_exc = Ex_slices[i+1] - Ex_slices[i]
+
+        plt.annotate(str(format(diff_exc, '.1f')), ((E_cuts[i] + E_cuts[i+1]) / 2.3, max(X_gamma) + 3.), fontsize=12, color=colors[i])
+
+    return
