@@ -166,7 +166,10 @@ res_ana = 0.01
 #MultiEnergyBin
 
 path_multiEbins         = "/home/tsirou/Documents/Analyses/MSH_15-52/energy-dependent/MultiEnergyBins/"
-filename_Bsteps         = "/big_steps/data/energy_excess_b.dat"
-filename_Ssteps         = "/small_steps/data/energy_excess_s.dat"
-filename_Psteps         = "/previous/energy_excess_p.dat"
+filename_Bsteps         = "big_steps/data/energy_excess_b.dat"
+filename_Ssteps         = "small_steps/data/energy_excess_s.dat"
+filename_Psteps         = "previous/energy_excess_p.dat"
+filename_Nsteps         = "new/data/energy_excess_n.dat"
+filename_Hsteps         = "h_res/data/energy_excess_h.dat"
+
 path_multiEbins_results = path_multiEbins + "plots/"
