@@ -12,6 +12,7 @@ from astropy import wcs
 from astropy.io import fits
 
 
+# Template background by subtracting the excess map to the gamma-like candidates one
 def leptonic_bkg(smooth_factor):
     hdu_gam_temp   = fits.open(names.path_template[names.analysis] + names.filename_gamma[names.analysis])
     hdu_exc_temp   = fits.open(names.path_template[names.analysis] + names.filename_excess[names.analysis])
@@ -19,13 +20,13 @@ def leptonic_bkg(smooth_factor):
     hdu_background = fits.open(names.path_template[names.analysis] + names.filename_bkg[names.analysis])
 
 
-    header      = hdu_background[1].header
+    header         = hdu_background[1].header
     w = wcs.WCS(header)
     w.wcs.ctype = ["RA---GLS", "DEC--GLS"]
 
-    excess   = fill_fits(hdu_exc_temp[1].data, len(hdu_gam_temp[1].data))
-    #excess   = hdu_exc_temp[1].data
-    bkgg     = hdu_gam_temp[1].data - excess 
+    excess         = fill_fits(hdu_exc_temp[1].data, len(hdu_gam_temp[1].data))
+    #excess         = hdu_exc_temp[1].data
+    bkgg           = hdu_gam_temp[1].data - excess
 
     hdu_background[1].data = bkgg
     hdu_background.writeto(names.path_template[names.analysis] + names.filename_bkg[names.analysis][:-5] + '_unsmoothed_bkg.fits',clobber=True)
@@ -44,6 +45,7 @@ def leptonic_bkg(smooth_factor):
     return
 
 
+# Cannot remember what this was for...
 def resolution_maps(fitsname,factor_fits):
 
     for name in fitsname:
@@ -77,6 +79,7 @@ def resolution_maps(fitsname,factor_fits):
     return
 
 
+# Counting the counts within a given radius
 def photon_count(radius):
 
     photons = 0
@@ -93,13 +96,11 @@ def photon_count(radius):
     radius    = int(radius / binsize) # radius in pixel
     print "\nRadius of selection (in pixels) : ",radius
 
-
     subtract  = hdu_p[names.hdu_ext].data
     selection = crop(subtract, radius*2)
 
     plt.imshow(selection,cmap='CMRmap')
     plt.show()
-
 
     circle    = np.zeros((len(selection),len(selection)))
     for i in range(0,len(selection)):

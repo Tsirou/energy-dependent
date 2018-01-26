@@ -423,18 +423,23 @@ def fits_cuts(save_path, output_gif_path, fits_files,zoom):
         ax[3].set_ylabel('Excess')
 
 
-        plt.savefig(output_gif_path + fits_files[fl] + '_energy_distribution_' + zoom + '.png', dpi=100)
+        plt.savefig(output_gif_path + fits_files[fl] + '_energy_distribution_2d0_' + zoom + '.png', dpi=100)
         plt.clf()
 
         hdu_gif_model.close()
 
-        gif_model.append(output_gif_path + fits_files[fl] + '_energy_distribution_' + zoom + '.png')
+        gif_model.append(output_gif_path + fits_files[fl] + '_energy_distribution_2d0_' + zoom + '.png')
 
     make_gif(files=list(reversed(gif_model)), delay=160,
-             output=output_gif_path + "energy-dependent_excess_distribution_" + zoom + ".gif")
+             output=output_gif_path + "energy-dependent_excess_distribution_2d0_" + zoom + ".gif")
 
 
     return
+
+
+
+################################################################################################
+################################################################################################
 
 #fits_gif(save_path, output_gif_path,fits_files,zoom,g1)
 #profile(save_path,fits_files,output_gif_path)

@@ -16,6 +16,7 @@ from astropy.coordinates import SkyCoord
 #==============================================================================
     
 # In order to have an output countdown
+# [should be on display.py but too lazy to actually transfer it.]
 def progress(count, total, suffix=''):
     bar_len = 60
     filled_len = int(round(bar_len * count / float(total)))
@@ -26,6 +27,7 @@ def progress(count, total, suffix=''):
     sys.stdout.write('[%s] %s%s --- %s\r' % (bar, percents, '%', suffix))
     sys.stdout.flush()
 
+#==============================================================================
 
 # Gnomonic projection for computing the distance between two objects
 def angular_separation(l1, b1, l2, b2):
@@ -34,7 +36,7 @@ def angular_separation(l1, b1, l2, b2):
     return angle
 #==============================================================================
 
-# Conversion from pixels to celestial coordinates using the center position and the resolution of the pic
+# Conversion from pixels to celestial coordinates using the position of the center and the resolution of the pic
 def convert_image(cx,cy,cim,xpos,ypos,res):
     cel  = cx - (xpos - cim) * res / (np.cos(cy * np.pi / 180.))
     esti = cy + (ypos - cim) * res
@@ -48,7 +50,7 @@ def convert_pix2wcs(fits_filename,x,y):
     
     cel1, cel2   = w.wcs_pix2world(x, y,names.random_convert_shift)
 
-    # if(names.analysis == 0):
+    # if(names.analysis == 0): # from galactic to fk5!
     #     c = SkyCoord(l=cel1*u.degree, b=cel2*u.degree, frame='galactic')
     #
     #     print "\nalpha = ",c.fk5.ra,"\ndelta = ",c.fk5.dec,"deg\n LON,LAT = ",cel1,cel2,"\n"
@@ -106,7 +108,6 @@ def rebin( a, newshape ):
     indices = coordinates.astype('i')   #choose the biggest smaller integer index
     return a[tuple(indices)]
 
-             
 def rebin_factor( a, newshape ):
         #newshape must be a factor of a.shape.
         assert len(a.shape) == len(newshape)
@@ -133,7 +134,6 @@ def rebin_med(a,factor):
             b[ii][jj] = b[ii][jj] / (factor**2)  
     return b
 
-
 def rebin_med_non_avg(a, factor):
     b_i = len(a) / factor
     b_j = len(a) / factor
@@ -150,7 +150,6 @@ def rebin_med_non_avg(a, factor):
             b[ii][jj] = b[ii][jj]
     return b
 
-    
 def rebin_red(a,factor):
 
     b_i = len(a) * factor
@@ -181,7 +180,7 @@ def crop(a,new_dim):
 
 
 # ==============================================================================
-# Cicular cropping function
+# Circular cropping function
 def crop_circle(a, rad):
     circle    = np.zeros((len(a),len(a)))
     for i in range(0,len(a)):
@@ -283,24 +282,30 @@ def AIC(l,k):
 
 #==============================================================================
 # Definition of gaussians
+
+# 1D Gaussian
 def gaussian(x, x0, norm, sigma):
     a  = norm * 1./(sigma * np.sqrt(2. * np.pi))
     return a * np.exp(-((x - x0)**2 / (2 * sigma**2)))
 
+# 1D Lorentzian
 def lorentz(x, x0, norm, gamma):
     a  = norm * 2. / (np.pi * gamma)
     return a * (1./ ( 1 + ((x - x0)/ (gamma / 2))**2))             
 
+# 1D Gaussian + 1D Lorentzian
 def lorentz_gaussian(x,x0,norm_lor,norm_gauss,sigma,gamma): 
     a  = norm_lor * 2. / (np.pi * gamma)
     b  = norm_gauss * 1./(sigma * np.sqrt(2. * np.pi))
     return  (a * (1./ ( 1 + ((x - x0)/ (gamma / 2))**2)) )+(b * np.exp(-((x - x0)**2 / (2 * sigma**2))))          
 
+# 1D Gaussian + 1D Gaussian
 def gaussian_gaussian(x,x0,norm_gauss1,norm_gauss2,sigma1,sigma2): 
     a  = norm_gauss1 * 1./(sigma1 * np.sqrt(2. * np.pi))
     b  = norm_gauss2 * 1./(sigma2 * np.sqrt(2. * np.pi))
     return  (a * np.exp(-((x - x0)**2 / (2 * sigma1**2))) )+(b * np.exp(-((x - x0)**2 / (2 * sigma2**2))))  
 
+# 1D Gaussian + 1D Gaussian + 1D Gaussian
 def triple_gaussian(x,x0,norm_gauss1,norm_gauss2,norm_gauss3,sigma1,sigma2,sigma3): 
     a      = norm_gauss1 * 1./(sigma1 * np.sqrt(2. * np.pi))
     b      = norm_gauss2 * 1./(sigma2 * np.sqrt(2. * np.pi))
@@ -311,7 +316,7 @@ def triple_gaussian(x,x0,norm_gauss1,norm_gauss2,norm_gauss3,sigma1,sigma2,sigma
 (c * np.exp(-((x - x0)**2 / (2 * sigma3**2))))
     return triple
 
-
+# a * x + b
 def affine(x,x1,y1,x2,y2):
 
     a   = (y1 - y2) / (x1 - x2)
@@ -321,7 +326,7 @@ def affine(x,x1,y1,x2,y2):
 
     return a * x + b
 
-# Found on the web
+# Radial profile estimation [Found on the web]
 def radial_profile(data, center):
     x, y = np.indices((data.shape))
     r    = np.sqrt((x - center[0])**2 + (y - center[1])**2)
@@ -332,12 +337,14 @@ def radial_profile(data, center):
     rp   = tbin / nr
     return rp
 
+# !
 def factorial(n):
     x = 1
     for i in range(1, (n+1)):
         x = x * i
     return x
 
+# Hermite polynoms for n degrees
 def Hermite_polynoms(x,n):
     sum_H   = 0
 
@@ -352,7 +359,7 @@ def Hermite_polynoms(x,n):
 
     return H
 
-
+# GDL/IDL procedure to correct the gammapy generated maps with the PA pixel projection
 def pixarea_correction(exposure_fits, ra, dec, resolution, corr_exposure_fits):
 
     dimension            = len(exposure_fits)

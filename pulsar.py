@@ -62,5 +62,4 @@ def pulsar_mag(psr_factor):
     hdu_x.close()
 
 
-
     return    

@@ -88,8 +88,6 @@ def fit_bkg(dim,i):
     if( bkg_option.find("gam") != -1): 
         if(i < 0):
             sherpa.load_table_model("bkg_mod",names.path_template[names.analysis] + names.filename_bkg[names.analysis][:-5] + '_smoothed_bkg_' + '7.0' + 'sigma.fits')
-
-
         else :
             sherpa.load_table_model("bkg_mod",names.path_template[names.analysis] + names.filename_bkg[names.analysis][:-5] + '_smoothed_bkg_' + str(i) + 'sigma.fits')
         sherpa.show_source()
@@ -1159,7 +1157,6 @@ def fit_msh1552_xfact_comp(dim,bkg_option,psf_gauss,psr_alpha,xampl):
                 sherpa.image_fit()
 
             sherpa.thaw(gcomp.fwhm)
-
 
 
 

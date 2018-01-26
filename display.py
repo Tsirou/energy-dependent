@@ -40,7 +40,7 @@ def plot_3d_lin(xx,yy,zz,ax,variable_names,colors,names,title):
         
     return scat
         
-
+# 2D with colorbar with a 3D projection
 def plot_2d_cmap(xx,yy,zz,fig3,variable_names,title):
     ax3 = fig3.add_subplot(111,projection='3d')
 
@@ -59,7 +59,7 @@ def plot_2d_cmap(xx,yy,zz,fig3,variable_names,title):
     fig3.colorbar(p,label=variable_names[2])
     
 
-# Display 
+# "Chosen" features display
 def plot_display(x,y,dpis):
     #Size of the figure
     fig = plt.figure(figsize=(x,y), dpi=dpis)
@@ -74,10 +74,14 @@ def plot_display(x,y,dpis):
 def reset_display():
     mpl.rcParams.update(mpl.rcParamsDefault)
 
+# Refreshing the scatter plot
 def update_plot(i, data, scat):
+
     scat.set_array(data[i])
+
     return scat
 
+# JPEG file generation [From the web]
 def make_views(ax,angles,elevation=None, width=20, height = 20,
                 prefix='tmprot_',**kwargs):
     """
@@ -104,7 +108,7 @@ def make_views(ax,angles,elevation=None, width=20, height = 20,
      
     return files
 
-    
+# MP4 file generation [From the web]
 def make_movie(files,output, fps=10,bitrate=1800,**kwargs):
     """
     Uses mencoder, produces a .mp4/.ogv/... movie from a list of
@@ -122,8 +126,8 @@ def make_movie(files,output, fps=10,bitrate=1800,**kwargs):
     output_ext = os.path.splitext(output)[1]
     os.system(command[output_ext])
  
- 
- 
+
+# GIF file generation [From the web]
 def make_gif(files,output,delay=100, repeat=True,**kwargs):
     """
     Uses imageMagick to produce an animated .gif from a list of
@@ -134,9 +138,7 @@ def make_gif(files,output,delay=100, repeat=True,**kwargs):
     os.system('convert -delay %d -loop %d %s %s'
               %(delay,loop," ".join(files),output))
  
- 
- 
- 
+# JPEG strip generation [From the web]
 def make_strip(files,output,**kwargs):
     """
     Uses imageMagick to produce a .jpeg strip from a list of
@@ -145,9 +147,7 @@ def make_strip(files,output,**kwargs):
      
     os.system('montage -tile 1x -geometry +0+0 %s %s'%(" ".join(files),output))
      
-         
-    
-
+# Animation [From the web]
 def rotanimate(ax, angles, output, **kwargs):
     """
     Produces an animation (.mp4,.ogv,.gif,.jpeg,.png) from a 3D plot on
@@ -182,7 +182,7 @@ def rotanimate(ax, angles, output, **kwargs):
     for f in files:
         os.remove(f)
     
-
+# Reversing the color scheme of a given colormap [From the web]
 def reverse_colourmap(cmap, name = 'my_cmap_r'):
     """
     In:
@@ -219,6 +219,7 @@ def reverse_colourmap(cmap, name = 'my_cmap_r'):
     my_cmap_r = mpl.colors.LinearSegmentedColormap(name, LinearL)
     return my_cmap_r
 
+# Custom GIF producing procedure of the fit model and residual maps
 def fits_gif(save_path,output_gif_path,fits_files,cash,psr_alpha,tname,zoom,g1):
  
 
@@ -446,7 +447,7 @@ def fits_gif(save_path,output_gif_path,fits_files,cash,psr_alpha,tname,zoom,g1):
     make_gif(files=gif_model,delay=100,output=save_path + tname+"_model_"+zoom+".gif")
     make_gif(files=gif_resid,delay=100,output=save_path + tname+"_resid_"+zoom+".gif")
 
-
+# Custom PNG producing procedure of the fit model and residual maps
 def fits_png(save_path, output_gif_path, fits_files, cash, psr_alpha, tname, zoom, g1, cb_reverse):
 
     smooth = 0
@@ -654,8 +655,7 @@ def fits_png(save_path, output_gif_path, fits_files, cash, psr_alpha, tname, zoo
     hdu_gif_model.close()
     hdu_gif_resid.close()
 
-
-
+# Plotting the energy slicing for a _ vs energy plot/histogram
 def slice_energy_plot(E_cuts, colors):
 
     bins   = len(E_cuts) - 1
@@ -665,6 +665,7 @@ def slice_energy_plot(E_cuts, colors):
 
     return
 
+# Plotting the excess label for each energy bin for an excess vs energy plot/histogram
 def slice_label_excess_plot(E_cuts, Ex_slices, X_gamma, colors):
 
     for i in range(0,len(Ex_slices) -1):
