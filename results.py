@@ -70,7 +70,7 @@ def display_results(save_fit,psf,psf_gauss,bkg_option):
         if(psf_gauss.find('G') == -1 and psf_gauss.find('sh') == -1 and psf_gauss.find('dc') == -1):
             param_names          = ["ampl"]
 
-        if(psf_gauss.find("G1") != -1):
+        if(psf_gauss.find("G1") != -1 and psf_gauss.find("2G1") == -1):
             param_names          = ["fwhm","xpos","ypos","ellip","theta","xrays_mod.ampl","gcomp.ampl"]
         if(psf_gauss.find("2G") != -1):
             param_names          = ["fwhm","xpos","ypos","xrays_mod.ampl","gcomp.ampl"]
@@ -79,7 +79,7 @@ def display_results(save_fit,psf,psf_gauss,bkg_option):
         if(psf_gauss.find("dc") != -1):
             param_names          = ["r0","xpos","ypos","xrays_mod.ampl","disc.ampl"]
     else:
-        if (psf_gauss.find("G1") != -1):
+        if (psf_gauss.find("G1") != -1 and psf_gauss.find("2G1") == -1):
             param_names = ["fwhm", "xpos", "ypos", "ellip", "theta"]
         if (psf_gauss.find("2G") != -1):
             param_names = ["fwhm", "xpos", "ypos"]
@@ -139,7 +139,7 @@ def display_results(save_fit,psf,psf_gauss,bkg_option):
 
     if (save_fit.find("X") != -1):
 
-        if (psf_gauss.find("G1") != -1):
+        if (psf_gauss.find("G1") != -1 and psf_gauss.find("2G1") == -1):
             sys.stdout.write("\n Coordinates of the asymetrical gaussian :\n")
             alpha_gauss1, delta_gauss1 = conversion.convert_pix2wcs(fits_filename, val[1][0], val[2][0])
             conversion.convert_deg2timearcs(alpha_gauss1, delta_gauss1)
@@ -376,7 +376,7 @@ def quick_results(save_fit, psf_gauss, name_file, elliptical,alpha,stat,dof):
 
         conversion.convert_deg2timearcs(equ.ra.deg, equ.dec.deg)
 
-        if (psf_gauss.find("G1") != -1):
+        if (psf_gauss.find("G1") != -1 and psf_gauss.find("2G1") == -1):
 
             print "Major axis :", conversion.fwhm_sigma(comp_fwhm, binsize),  "\n"
 
@@ -459,7 +459,7 @@ def quick_errors(save_fit_true,save_fit, psf_gauss,elliptical, configuration):
         if (psf_gauss.find('G') == -1 and psf_gauss.find('sh') == -1 and psf_gauss.find('dc') == -1):
             param_names = ["ampl"]
 
-        if (psf_gauss.find("G1") != -1):
+        if (psf_gauss.find("G1") != -1 and psf_gauss.find("2G1") == -1):
             param_names = ["fwhm", "xpos", "ypos", "ellip", "theta", "xrays_mod.ampl", "gcomp.ampl"]
         if (psf_gauss.find("2G") != -1):
             param_names = ["fwhm", "xpos", "ypos", "xrays_mod.ampl", "gcomp.ampl"]
@@ -468,7 +468,7 @@ def quick_errors(save_fit_true,save_fit, psf_gauss,elliptical, configuration):
         if (psf_gauss.find("dc") != -1):
             param_names = ["r0", "xpos", "ypos", "xrays_mod.ampl", "disc.ampl"]
     else:
-        if (psf_gauss.find("G1") != -1):
+        if (psf_gauss.find("G1") != -1 and psf_gauss.find("2G1") == -1):
             param_names = ["fwhm", "xpos", "ypos", "ellip", "theta"]
         if (psf_gauss.find("2G") != -1):
             param_names = ["fwhm", "xpos", "ypos"]
@@ -499,15 +499,15 @@ def quick_errors(save_fit_true,save_fit, psf_gauss,elliptical, configuration):
             if (temp[0].find(column[k]) != -1):
                 for j in range(2, len(temp)):
                     if (j == 2):
-                        if (temp[j].split("(")[1].split(",")[0].find('None') != -1 ):#or temp[j].split("(")[1].split(",")[0] == None or type(temp[j].split(",")[0]) == str):
+                        if (temp[j].split("(")[1].split(",")[0].find('None') != -1 or temp[j].split("(")[1].split(",")[0] == None or type(temp[j].split(",")[0]) == str):
                             temp[j].split("(")[1].split(",")[0] = 0
                         data[k][j - 2] = float(temp[j].split("(")[1].split(",")[0])
                     if (j == len(temp) - 1 and j != 2):
-                        if (temp[j].split(")")[0].find('None') != -1 ):#or temp[j].split(")")[0] == None or type(temp[j].split(")")) == str):
+                        if (temp[j].split(")")[0].find('None') != -1 or temp[j].split(")")[0] == None or type(temp[j].split(")")) == str):
                             temp[j].split(")")[0] = 0
                         data[k][j - 2] = float(temp[j].split(")")[0])
                     if (j > 2 and j < len(temp) - 1):
-                        if (temp[j].split()[0].split(",")[0].find('None') != -1 ):#or temp[j].split()[0].split(",")[0] == None or type(temp[j].split()[0].split(",")[0]) == str):
+                        if (temp[j].split()[0].split(",")[0].find('None') != -1 or temp[j].split()[0].split(",")[0] == None or type(temp[j].split()[0].split(",")[0]) == str):
                             temp[j].split()[0].split(",")[0] = 0
                         #     print("Hello")
                         #     print(temp[j].split()[0].split(",")[0])
@@ -606,7 +606,7 @@ def quick_errors(save_fit_true,save_fit, psf_gauss,elliptical, configuration):
 
             print "X-ray amplitude ", xray_ampl, "- / + ", val_min[0][0], val_max[0][0]
 
-            if (psf_gauss.find("G1") != -1):
+            if (psf_gauss.find("G1") != -1 and psf_gauss.find("2G1") == -1):
 
                 print "\nComponent amplitude / X-ray amplitude :", val[6][0] / val[5][0]," - / + ",val[6][0] / val[5][0] * (val_min[6][0] / val[6][0] + val_min[5][0]/val[5][0]),val[6][0] / val[5][0] * (val_max[6][0] / val[6][0] + val_max[5][0]/val[5][0]),"\n"
 

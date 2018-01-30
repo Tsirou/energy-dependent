@@ -318,27 +318,27 @@ def fit_msh1552(dim,bkg_option,i):
     else :
         psf        = "y"
         psf_gauss  = "G3"
-        
+
     if(psf.find("y") != -1 and bkg_option.find("tmp") != -1 ):
         if(psf_gauss.find("G3") != -1):
             sherpa.set_full_model(g0 + hPSF2((sherpa.gauss2d.g1 + sherpa.gauss2d.g2 + sherpa.gauss2d.g3) * exposure))
-        if(psf_gauss.find("G1") != -1):
+        if(psf_gauss.find("G1") != -1 and psf_gauss.find("2G1") == -1):
             sherpa.set_full_model(g0 + hPSF2(sherpa.gauss2d.g1 * exposure))
         if(psf_gauss.find("G2") != -1):
             sherpa.set_full_model(g0 + hPSF2((sherpa.gauss2d.g1 + sherpa.gauss2d.g2) *exposure ))
-        
+
     if(psf.find("n") != -1 and bkg_option.find("tmp") != -1):
         if(psf_gauss.find("G3") != -1):
             sherpa.set_full_model(g0 + sherpa.gauss2d.g1 + sherpa.gauss2d.g2 + sherpa.gauss2d.g3)
-        if(psf_gauss.find("G1") != -1):
+        if(psf_gauss.find("G1") != -1 and psf_gauss.find("2G1") == -1):
             sherpa.set_full_model(g0 + sherpa.gauss2d.g1)
         if(psf_gauss.find("G2") != -1):
-            sherpa.set_full_model(g0 + sherpa.gauss2d.g1 + sherpa.gauss2d.g2)        
+            sherpa.set_full_model(g0 + sherpa.gauss2d.g1 + sherpa.gauss2d.g2)
 
     if(psf.find("y") != -1 and bkg_option.find("gam") != -1 ):
         if(psf_gauss.find("G3") != -1):
             sherpa.set_full_model(bkg_mod + hPSF2( (sherpa.gauss2d.g1 + sherpa.gauss2d.g2 + sherpa.gauss2d.g3) * exposure))
-        if(psf_gauss.find("G1") != -1):
+        if(psf_gauss.find("G1") != -1 and psf_gauss.find("2G1") == -1):
             sherpa.set_full_model(bkg_mod + hPSF2(sherpa.gauss2d.g1 * exposure))
         if(psf_gauss.find("G2") != -1):
             sherpa.set_full_model(bkg_mod + hPSF2( (sherpa.gauss2d.g1 + sherpa.gauss2d.g2) * exposure ))
@@ -346,7 +346,7 @@ def fit_msh1552(dim,bkg_option,i):
     if(psf.find("n") != -1 and bkg_option.find("gam") != -1):
         if(psf_gauss.find("G3") != -1):
             sherpa.set_full_model(bkg_mod + sherpa.gauss2d.g1 + sherpa.gauss2d.g2 + sherpa.gauss2d.g3)
-        if(psf_gauss.find("G1") != -1):
+        if(psf_gauss.find("G1") != -1 and psf_gauss.find("2G1") == -1):
             sherpa.set_full_model(bkg_mod + sherpa.gauss2d.g1)
         if(psf_gauss.find("G2") != -1):
             sherpa.set_full_model(bkg_mod + sherpa.gauss2d.g1 + sherpa.gauss2d.g2)              
@@ -420,7 +420,7 @@ def fit_msh1552(dim,bkg_option,i):
         
         
     # 1G 2D fit        
-    if(psf_gauss.find("G1") != -1):
+    if(psf_gauss.find("G1") != -1 and psf_gauss.find("2G1") == -1):
 
         g1.xpos   =   dim/2. + 0.5
         g1.ypos   =   dim/2. + 0.5
@@ -547,7 +547,7 @@ def fit_msh1552(dim,bkg_option,i):
         r_intrinsic         = fwhm_sigma(g3.fwhm.val,factor_pix2deg_gamma)
         print "\n Intrinsic standart deviation (center)         : ",r_intrinsic," arcmin"
     
-    if(psf_gauss.find("G1") != -1):
+    if(psf_gauss.find("G1") != -1 and psf_gauss.find("2G1") == -1):
         sys.stdout.write("\n Coordinates of the gaussian :\n")
         alpha_gauss1,delta_gauss1   = convert_pix2wcs(fits_filename, g1.xpos.val, g1.ypos.val)
         convert_deg2timearcs(alpha_gauss1,delta_gauss1)             
@@ -602,19 +602,19 @@ def fit_ls5039(dim):
     psf   = options.use_psf()
     if(psf.find("y") != -1):
         psf_gauss = "G1"
-        if(psf_gauss.find("G1") != -1):
+        if(psf_gauss.find("G1") != -1 and psf_gauss.find("2G1") == -1):
             sherpa.set_full_model(g0 + hPSF2(sherpa.gauss2d.g1))
         
     if(psf.find("n") != -1):
         psf_gauss = options.nb_gauss()        
         if(psf_gauss.find("G3") != -1):
             sherpa.set_full_model(g0 + sherpa.gauss2d.g1 + sherpa.gauss2d.g2 + sherpa.gauss2d.g3)
-        if(psf_gauss.find("G1") != -1):
+        if(psf_gauss.find("G1") != -1 and psf_gauss.find("2G1") == -1):
             sherpa.set_full_model(g0 + sherpa.gauss2d.g1)
         if(psf_gauss.find("G2") != -1):
             sherpa.set_full_model(g0 + sherpa.gauss2d.g1 + sherpa.gauss2d.g2)      
 
-    if(psf_gauss.find("G1") != -1):        
+    if(psf_gauss.find("G1") != -1 and psf_gauss.find("2G1") == -1):
         # A gaussian
         g1.xpos   =   dim/2.
         g1.ypos   =   dim/2.
@@ -863,7 +863,7 @@ def fit_ls5039(dim):
         r_intrinsic         = fwhm_sigma(g3.fwhm.val,factor_pix2deg_gamma)
         print "\n Intrinsic standart deviation (center)         : ",r_intrinsic," arcmin"
     
-    if(psf_gauss.find("G1") != -1):
+    if(psf_gauss.find("G1") != -1 and psf_gauss.find("2G1") == -1):
         sys.stdout.write("\n Coordinates of the gaussian :\n")
         alpha_gauss1,delta_gauss1   = convert_pix2wcs(fits_filename, g1.xpos.val, g1.ypos.val)
         convert_deg2timearcs(alpha_gauss1,delta_gauss1)             
@@ -1127,7 +1127,7 @@ def fit_msh1552_xfact_comp(dim,bkg_option,psf_gauss,psr_alpha,xampl):
             xrays_mod.ampl   =   xampl   
             sherpa.freeze(xrays_mod.ampl)
 
-        if(psf_gauss.find("G1") != -1):
+        if(psf_gauss.find("G1") != -1 and psf_gauss.find("2G1") == -1):
         
             sherpa.fit()
             if (names.display_ds9.find('y') != -1):
@@ -1149,7 +1149,7 @@ def fit_msh1552_xfact_comp(dim,bkg_option,psf_gauss,psr_alpha,xampl):
 
             sherpa.thaw(gcomp.ampl)
 
-            gcomp.fwhm   =   8
+            gcomp.fwhm   =   names.fwhm_init
             sherpa.freeze(gcomp.fwhm)
 
             sherpa.fit()

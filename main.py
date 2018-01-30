@@ -206,7 +206,7 @@ for t in range(component_list_index_start, component_list_index_end):
     # For the results --> plots and confidence intervals
 
     print "\n"
-    progress(t,len(names.fit_component),tname+'\n')
+    progress(t, len(names.fit_component), tname + '\n')
     psr_factor = names.alpha_factor_pa[t]
 
     #Rebinning the xray map
@@ -216,22 +216,27 @@ for t in range(component_list_index_start, component_list_index_end):
     #Saving the corresponding header properties in the rebinned X-ray image
     xray_header()
     # Morphological fit for MSH 15-52 with the X-ray templates
-    psf,gauss,name_file,component = fit_msh1552_xfact_comp(dim_im,bkg,tname,str(psr_factor),-1)
+    psf, gauss, name_file, component = fit_msh1552_xfact_comp(dim_im, bkg, tname, str(psr_factor), -1)
 
     # Loading the CASH stat value for each test
-    nf,cash_stats    =  np.loadtxt(names.save_path[names.analysis]+"fit_info_"+gauss[:3]+".out",dtype=float,usecols=(0,1),unpack=True,skiprows=1)
+    nf,cash_stats    =  np.loadtxt(names.save_path[names.analysis] + "fit_info_" + gauss[:3] + ".out", dtype=float, usecols=(0,1), unpack=True, skiprows=1)
 
     print "\n alpha = ",psr_factor,"CASH = ",cash_stats[-1]
 
     quick_results('yes',gauss,name_file,component,psr_factor,cash_stats[-1],-1)
     quick_errors('yes',tname, gauss,component, t)
 
-    fits_png(names.save_path[analysis],names.results_path,name_file,cash_stats[-1],psr_factor, tname + '_PA','all_n',component,'n')
+    fits_png(names.save_path[analysis],names.results_path,name_file,cash_stats[-1],psr_factor, tname + '_PA','all_n', component,'n')
     fits_png(names.save_path[analysis], names.results_path, name_file, cash_stats[-1], psr_factor,tname + '_PA', 'all_n', component, 'y')
-    fits_png(names.save_path[analysis], names.results_path, name_file, cash_stats[-1], psr_factor, tname + '_PA', 'all_y',
-         component, 'n')
-    fits_png(names.save_path[analysis], names.results_path, name_file, cash_stats[-1], psr_factor, tname + '_PA', 'all_y',
-         component, 'y')
+    fits_png(names.save_path[analysis], names.results_path, name_file, cash_stats[-1], psr_factor, tname + '_PA', 'all_y', component, 'n')
+    fits_png(names.save_path[analysis], names.results_path, name_file, cash_stats[-1], psr_factor, tname + '_PA', 'all_y', component, 'y')
+
+
+################################################################################################################
+################################################################################################################
+################################################################################################################
+
+
 
 #==============================================================================
 # x_slice,y_slice,L_slice,l_slice,dev_slice     =  np.loadtxt(names.path + names.filename_slice,dtype=float,usecols=(0,1,2,3,4),unpack=True,skiprows=1)

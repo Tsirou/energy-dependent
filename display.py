@@ -672,6 +672,6 @@ def slice_label_excess_plot(E_cuts, Ex_slices, X_gamma, colors):
 
         diff_exc = Ex_slices[i+1] - Ex_slices[i]
 
-        plt.annotate(str(format(diff_exc, '.1f')), ((E_cuts[i] + E_cuts[i+1]) / 2.3, max(X_gamma) + 3.), fontsize=12, color=colors[i])
+        plt.annotate(str(format(diff_exc, '.1f')), ((E_cuts[i] + E_cuts[i+1]) / 2.1, max(X_gamma) + 3.), fontsize=12, color=colors[i])
 
     return
