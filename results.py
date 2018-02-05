@@ -444,6 +444,14 @@ def quick_errors(save_fit_true,save_fit, psf_gauss,elliptical, configuration):
     dof = len(one_row.split()) - 3
     f.close()
 
+    with open(saved_results, 'r') as r_file:
+        filedata = r_file.read()
+    filedata = filedata.replace('None', '0')
+
+    with open(saved_results, 'w') as r_file:
+        r_file.write(filedata)
+    r_file.close()
+
     if (save_fit.find("xr0") == -1):
         print "\n STATISTICS :\n   CASH  = ", cash, "\n   d.o.f : ", dof ,"+ 1", "\n   AIC   = ", cash + 2. * (dof + 1)
     if(save_fit.find("xr0") != -1):

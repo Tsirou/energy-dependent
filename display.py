@@ -675,3 +675,18 @@ def slice_label_excess_plot(E_cuts, Ex_slices, X_gamma, colors):
         plt.annotate(str(format(diff_exc, '.1f')), ((E_cuts[i] + E_cuts[i+1]) / 2.1, max(X_gamma) + 3.), fontsize=12, color=colors[i])
 
     return
+
+
+def reading_energy_bins(X_on, X_off, X_alpha, X_E_min, X_E_max, colors):
+
+    bins   = len(X_on)
+
+
+    for i in range(0, bins):
+
+        excess = X_on[i] - (X_off[i] / X_alpha[i])
+
+        plt.axvspan(X_E_min[i], X_E_max[i], color=colors[i], linestyle='solid', alpha=0.2)
+        plt.annotate(str(format(excess, '.1f')), ((X_E_min[i] + X_E_max[i]) / 2.1, excess + 3.), fontsize=12, color=colors[i])
+
+    return

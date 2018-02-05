@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 
 from heapq import merge
-from display import slice_energy_plot, slice_label_excess_plot
+from display import slice_energy_plot, slice_label_excess_plot, reading_energy_bins
 
 B_bins, B_on, B_off                = np.loadtxt(names.path_multiEbins + names.filename_Bsteps, dtype=int, skiprows=1, usecols=(0,3,4), unpack=True)
 B_E_min, B_E_max, B_alpha, B_gamma = np.loadtxt(names.path_multiEbins + names.filename_Bsteps, dtype=float, skiprows=1, usecols=(1,2,5,6), unpack=True)
@@ -26,8 +26,10 @@ H_E_min, H_E_max, H_alpha, H_gamma = np.loadtxt(names.path_multiEbins + names.fi
 NH_bins, NH_on, NH_off                = np.loadtxt(names.path_multiEbins + names.filename_NHsteps, dtype=int, skiprows=1, usecols=(0,3,4), unpack=True)
 NH_E_min, NH_E_max, NH_alpha, NH_gamma = np.loadtxt(names.path_multiEbins + names.filename_NHsteps, dtype=float, skiprows=1, usecols=(1,2,5,6), unpack=True)
 
+Hn_bins, Hn_on, Hn_off                = np.loadtxt(names.path_multiEbins + names.filename_Hnsteps, dtype=int, skiprows=1, usecols=(0,3,4), unpack=True)
+Hn_E_min, Hn_E_max, Hn_alpha, Hn_gamma = np.loadtxt(names.path_multiEbins + names.filename_Hnsteps, dtype=float, skiprows=1, usecols=(1,2,5,6), unpack=True)
 
-colors                             = ["cornflowerblue", "springgreen", "orange", "indianred","crimson","indigo","navy","teal","limegreen","yellow","brown","silver"]
+colors                             = ["cornflowerblue", "springgreen", "orange", "indianred","crimson","indigo","navy","teal","limegreen","brown","magenta","darkgrey"]
 
 
 
@@ -96,18 +98,44 @@ print("\nHiRes previous steps bin choice")
 nb_bins           = 4
 H_computed_slices_E, H_computed_slices_ex = slicing_energy_bins(H_on, H_off, H_alpha, H_E_min, H_E_max, nb_bins)
 
-plt.title('Energy vs excess')
+plt.title('Energy vs excess\n\n Bins : [0.3 - 0.6 || 0.6 - 0.9 || 0.9 - 3.0 || 3.0 - 100] TeV')
 plt.xlabel('Energy (TeV)')
 plt.ylabel('Excess')
 
-#plt.xticks(np.arange(S_E_min[0], S_E_max[-1], 0.3))
+P_err_exc   = np.sqrt(P_on) + (np.sqrt(P_off) / P_alpha )
+H_err_exc  = np.sqrt(H_on) - (np.sqrt(H_off) / H_alpha )
 
-log_bins = list(merge(H_E_min, H_E_max))[::2]
+plt.semilogx( P_E_min, P_on - (P_off / P_alpha ), color='darkgreen', marker=".", linestyle='solid', drawstyle='steps-post', label='N$_{ON}$ - a$^{-1}$ N$_{OFF}$ [std]')
+plt.semilogx( P_E_max, P_on - (P_off / P_alpha ), color='darkgreen', marker=".", drawstyle='steps-pre', linestyle='solid')
 
-plt.semilogx( H_E_min, H_on - (H_off / H_alpha ), color='darkgreen', marker=".", linestyle='solid', drawstyle='steps-post', label='N$_{ON}$ - a$^{-1}$ N$_{OFF}$ [H]')
-plt.semilogx( H_E_max, H_on - (H_off / H_alpha ), color='darkgreen', marker=".", drawstyle='steps-pre', linestyle='solid')
+plt.semilogx( P_E_min, (P_on - (P_off / P_alpha ) ) + P_err_exc, color='darkgreen', linestyle='--', drawstyle='steps-post', alpha = 0.5)
+plt.semilogx( P_E_max, (P_on - (P_off / P_alpha ) ) + P_err_exc, color='darkgreen', drawstyle='steps-pre', linestyle='--', alpha = 0.5)
+plt.semilogx( P_E_min, (P_on - (P_off / P_alpha ) ) - P_err_exc, color='darkgreen', linestyle='--', drawstyle='steps-post', alpha = 0.5)
+plt.semilogx( P_E_max, (P_on - (P_off / P_alpha ) ) - P_err_exc, color='darkgreen', drawstyle='steps-pre', linestyle='--', alpha = 0.5)
+
+
+plt.semilogx( H_E_min, H_on - (H_off / H_alpha ), color='darkorange', marker=".", linestyle='solid', drawstyle='steps-post', label='N$_{ON}$ - a$^{-1}$ N$_{OFF}$ [HiRes]')
+plt.semilogx( H_E_max, H_on - (H_off / H_alpha ), color='darkorange', marker=".", drawstyle='steps-pre', linestyle='solid')
+
+plt.semilogx( H_E_min, (H_on - (H_off / H_alpha ) ) + H_err_exc, color='darkorange', linestyle='--', drawstyle='steps-post', alpha = 0.5)
+plt.semilogx( H_E_max, (H_on - (H_off / H_alpha ) ) + H_err_exc, color='darkorange', drawstyle='steps-pre', linestyle='--', alpha = 0.5)
+plt.semilogx( H_E_min, (H_on - (H_off / H_alpha ) ) - H_err_exc, color='darkorange', linestyle='--', drawstyle='steps-post', alpha = 0.5)
+plt.semilogx( H_E_max, (H_on - (H_off / H_alpha ) ) - H_err_exc, color='darkorange', drawstyle='steps-pre', linestyle='--', alpha = 0.5)
+
 
 E_cuts  = [0.3, 0.6, 0.9, 3.0, 100.]
+
+exc     = 0.
+Ex_cuts = []
+Ex_cuts.append(0.)
+for i in range(0, len(N_on)):
+    exc = exc + (P_on[i] - P_off[i] / P_alpha[i])
+    Ex_cuts.append(exc)
+
+slice_energy_plot(E_cuts, colors)
+slice_label_excess_plot(E_cuts, Ex_cuts, P_gamma, colors)
+
+
 exc     = 0.
 Ex_cuts = []
 Ex_cuts.append(0.)
@@ -122,6 +150,7 @@ plt.legend(fontsize=10,numpoints=1,loc=3)
 plt.show()
 #plt.savefig(names.path_multiEbins_results + 'energy_VS_excess_s'  + '.png', dpi=1000)
 
+
 plt.clf()
 
 print("\nNew steps bin choice")
@@ -129,17 +158,34 @@ print("\nNew steps bin choice")
 nb_bins           = 4
 N_computed_slices_E, N_computed_slices_ex = slicing_energy_bins(N_on, N_off, N_alpha, N_E_min, N_E_max, nb_bins)
 
-plt.title('Energy vs excess')
+plt.title('Energy vs excess\n\n Bins : [0.3 - 0.6 || 0.6 - 1.2 || 1.2 - 2.4 || 2.4 - 100] TeV')
 plt.xlabel('Energy (TeV)')
 plt.ylabel('Excess')
 
 
-log_bins = list(merge(N_E_min,N_E_max))[::2]
+N_err_exc   = np.sqrt(N_on) + (np.sqrt(N_off) / N_alpha )
+Hn_err_exc  = np.sqrt(Hn_on) - (np.sqrt(Hn_off) / Hn_alpha )
 
-plt.semilogx( N_E_min, N_on - (N_off / N_alpha ), color='darkgreen', marker=".", linestyle='solid', drawstyle='steps-post', label='N$_{ON}$ - a$^{-1}$ N$_{OFF}$ [N]')
+plt.semilogx( N_E_min, N_on - (N_off / N_alpha ), color='darkgreen', marker=".", linestyle='solid', drawstyle='steps-post', label='N$_{ON}$ - a$^{-1}$ N$_{OFF}$ [std]')
 plt.semilogx( N_E_max, N_on - (N_off / N_alpha ), color='darkgreen', marker=".", drawstyle='steps-pre', linestyle='solid')
 
+plt.semilogx( N_E_min, (N_on - (N_off / N_alpha ) ) + N_err_exc, color='darkgreen', linestyle='--', drawstyle='steps-post', alpha = 0.5)
+plt.semilogx( N_E_max, (N_on - (N_off / N_alpha ) ) + N_err_exc, color='darkgreen', drawstyle='steps-pre', linestyle='--', alpha = 0.5)
+plt.semilogx( N_E_min, (N_on - (N_off / N_alpha ) ) - N_err_exc, color='darkgreen', linestyle='--', drawstyle='steps-post', alpha = 0.5)
+plt.semilogx( N_E_max, (N_on - (N_off / N_alpha ) ) - N_err_exc, color='darkgreen', drawstyle='steps-pre', linestyle='--', alpha = 0.5)
+
+
+plt.semilogx( Hn_E_min, Hn_on - (Hn_off / Hn_alpha ), color='darkorange', marker=".", linestyle='solid', drawstyle='steps-post', label='N$_{ON}$ - a$^{-1}$ N$_{OFF}$ [HiRes]')
+plt.semilogx( Hn_E_max, Hn_on - (Hn_off / Hn_alpha ), color='darkorange', marker=".", drawstyle='steps-pre', linestyle='solid')
+
+plt.semilogx( Hn_E_min, (Hn_on - (Hn_off / Hn_alpha ) ) + Hn_err_exc, color='darkorange', linestyle='--', drawstyle='steps-post', alpha = 0.5)
+plt.semilogx( Hn_E_max, (Hn_on - (Hn_off / Hn_alpha ) ) + Hn_err_exc, color='darkorange', drawstyle='steps-pre', linestyle='--', alpha = 0.5)
+plt.semilogx( Hn_E_min, (Hn_on - (Hn_off / Hn_alpha ) ) - Hn_err_exc, color='darkorange', linestyle='--', drawstyle='steps-post', alpha = 0.5)
+plt.semilogx( Hn_E_max, (Hn_on - (Hn_off / Hn_alpha ) ) - Hn_err_exc, color='darkorange', drawstyle='steps-pre', linestyle='--', alpha = 0.5)
+
+
 E_cuts  = [0.3, 0.6, 1.2, 2.4, 100.]
+
 exc     = 0.
 Ex_cuts = []
 Ex_cuts.append(0.)
@@ -150,62 +196,23 @@ for i in range(0, len(N_on)):
 slice_energy_plot(E_cuts, colors)
 slice_label_excess_plot(E_cuts, Ex_cuts, N_gamma, colors)
 
-plt.legend(fontsize=10,numpoints=1,loc=3)
+
+exc     = 0.
+Ex_cuts = []
+Ex_cuts.append(0.)
+for i in range(0, len(Hn_on)):
+    exc = exc + (Hn_on[i] - Hn_off[i] / Hn_alpha[i])
+    Ex_cuts.append(exc)
+
+slice_energy_plot(E_cuts, colors)
+slice_label_excess_plot(E_cuts, Ex_cuts, Hn_gamma, colors)
+
+plt.legend(fontsize=10,numpoints=1,loc=1)
 plt.show()
 #plt.savefig(names.path_multiEbins_results + 'energy_VS_excess_s'  + '.png', dpi=1000)
 
 plt.clf()
 
-
-print("\nSmall log steps bin choice")
-
-nb_bins           = 12
-S_computed_slices_E, S_computed_slices_ex = slicing_energy_bins(S_on, S_off, S_alpha, S_E_min, S_E_max, nb_bins)
-
-plt.title('Energy vs excess')
-plt.xlabel('Energy (TeV)')
-plt.ylabel('Excess')
-
-#plt.xticks(np.arange(S_E_min[0], S_E_max[-1], 0.3))
-
-log_bins = list(merge(B_E_min,B_E_max))[::2]
-
-plt.semilogx( S_E_min, S_on - (S_off / S_alpha ), color='darkgreen', marker=".", linestyle='solid', drawstyle='steps-post', label='N$_{ON}$ - a$^{-1}$ N$_{OFF}$ [S]')
-plt.semilogx( S_E_max, S_on - (S_off / S_alpha ), color='darkgreen', marker=".", drawstyle='steps-pre', linestyle='solid')
-
-slice_energy_plot(E_cuts=S_computed_slices_E, colors=colors)
-slice_label_excess_plot(S_computed_slices_E, S_computed_slices_ex, S_gamma, colors)
-
-
-plt.legend(fontsize=10,numpoints=1)
-plt.show()
-#plt.savefig(names.path_multiEbins_results + 'energy_VS_excess_s'  + '.png', dpi=1000)
-
-plt.clf()
-
-
-print("\nSmall HiRes log steps bin choice")
-
-nb_bins           = 14
-NH_computed_slices_E, NH_computed_slices_ex = slicing_energy_bins(NH_on, NH_off, NH_alpha, NH_E_min, NH_E_max, nb_bins)
-
-plt.title('Energy vs excess')
-plt.xlabel('Energy (TeV)')
-plt.ylabel('Excess')
-
-
-plt.semilogx( NH_E_min, NH_on - (NH_off / NH_alpha ), color='darkorange', marker=".", linestyle='solid', drawstyle='steps-post', label='N$_{ON}$ - a$^{-1}$ N$_{OFF}$ [NH]')
-plt.semilogx( NH_E_max, NH_on - (NH_off / NH_alpha ), color='darkorange', marker=".", drawstyle='steps-pre', linestyle='solid')
-
-slice_energy_plot(E_cuts=NH_computed_slices_E, colors=colors)
-slice_label_excess_plot(NH_computed_slices_E, NH_computed_slices_ex, NH_gamma, colors)
-
-
-plt.legend(fontsize=10,numpoints=1)
-plt.show()
-#plt.savefig(names.path_multiEbins_results + 'energy_VS_excess_s'  + '.png', dpi=1000)
-
-plt.clf()
 
 
 print("\nSmall log steps bin choice")
@@ -215,19 +222,28 @@ plt.xlabel('Energy (TeV)')
 plt.ylabel('Excess')
 
 
-plt.semilogx( S_E_min, S_on - (S_off / S_alpha ), color='darkgreen', marker=".", linestyle='solid', drawstyle='steps-post', label='N$_{ON}$ - a$^{-1}$ N$_{OFF}$ [S]')
+S_err_exc   = np.sqrt(S_on) + (np.sqrt(S_off) / S_alpha )
+NH_err_exc  = np.sqrt(NH_on) - (np.sqrt(NH_off) / NH_alpha )
+
+plt.semilogx( S_E_min, S_on - (S_off / S_alpha ), color='darkgreen', marker=".", linestyle='solid', drawstyle='steps-post', label='N$_{ON}$ - a$^{-1}$ N$_{OFF}$ [std]')
 plt.semilogx( S_E_max, S_on - (S_off / S_alpha ), color='darkgreen', marker=".", drawstyle='steps-pre', linestyle='solid')
 
-plt.semilogx( NH_E_min, NH_on - (NH_off / NH_alpha ), color='darkorange', marker=".", linestyle='solid', drawstyle='steps-post', label='N$_{ON}$ - a$^{-1}$ N$_{OFF}$ [NH]')
+plt.semilogx( S_E_min, (S_on - (S_off / S_alpha ) ) + S_err_exc, color='darkgreen', linestyle='--', drawstyle='steps-post', alpha = 0.5)
+plt.semilogx( S_E_max, (S_on - (S_off / S_alpha ) ) + S_err_exc, color='darkgreen', drawstyle='steps-pre', linestyle='--', alpha = 0.5)
+plt.semilogx( S_E_min, (S_on - (S_off / S_alpha ) ) - S_err_exc, color='darkgreen', linestyle='--', drawstyle='steps-post', alpha = 0.5)
+plt.semilogx( S_E_max, (S_on - (S_off / S_alpha ) ) - S_err_exc, color='darkgreen', drawstyle='steps-pre', linestyle='--', alpha = 0.5)
+
+
+plt.semilogx( NH_E_min, NH_on - (NH_off / NH_alpha ), color='darkorange', marker=".", linestyle='solid', drawstyle='steps-post', label='N$_{ON}$ - a$^{-1}$ N$_{OFF}$ [HiRes]')
 plt.semilogx( NH_E_max, NH_on - (NH_off / NH_alpha ), color='darkorange', marker=".", drawstyle='steps-pre', linestyle='solid')
 
+plt.semilogx( NH_E_min, (NH_on - (NH_off / NH_alpha )) + NH_err_exc, color='darkorange', linestyle='--', drawstyle='steps-post', alpha = 0.5)
+plt.semilogx( NH_E_max, (NH_on - (NH_off / NH_alpha )) + NH_err_exc, color='darkorange', drawstyle='steps-pre', linestyle='--', alpha = 0.5)
+plt.semilogx( NH_E_min, (NH_on - (NH_off / NH_alpha )) - NH_err_exc, color='darkorange', linestyle='--', drawstyle='steps-post', alpha = 0.5)
+plt.semilogx( NH_E_max, (NH_on - (NH_off / NH_alpha )) - NH_err_exc, color='darkorange', drawstyle='steps-pre', linestyle='--', alpha = 0.5)
 
-slice_energy_plot(E_cuts=S_computed_slices_E, colors=colors)
-slice_label_excess_plot(S_computed_slices_E, S_computed_slices_ex, S_gamma, colors)
-
-slice_energy_plot(E_cuts=NH_computed_slices_E, colors=colors)
-slice_label_excess_plot(NH_computed_slices_E, NH_computed_slices_ex, NH_gamma, colors)
-
+reading_energy_bins(S_on, S_off, S_alpha, S_E_min, S_E_max, colors)
+reading_energy_bins(NH_on, NH_off, NH_alpha, NH_E_min, NH_E_max, colors)
 
 plt.legend(fontsize=10,numpoints=1)
 plt.show()
@@ -238,14 +254,21 @@ plt.clf()
 
 print("\nBig log steps bin choice")
 
-nb_bins           = 3
-B_computed_slices_E, B_computed_slices_ex = slicing_energy_bins(B_on, B_off, B_alpha, B_E_min, B_E_max, nb_bins)
+plt.title('Energy vs excess\n\n Log steps [0.3 - 75.4] TeV')
+plt.xlabel('Energy (TeV)')
+plt.ylabel('Excess')
 
-plt.semilogx( B_E_min , B_on - (B_off / B_alpha ), color='darkblue', marker=".", linestyle='solid', drawstyle='steps-post', label='N$_{ON}$ - a $^{-1}$ N$_{OFF}$ [B]')
-plt.semilogx( B_E_max , B_on - (B_off / B_alpha ), color='darkblue', marker=".", linestyle='solid', drawstyle='steps-pre')
+B_err_exc   = np.sqrt(B_on) + (np.sqrt(B_off) / B_alpha )
 
-slice_energy_plot(E_cuts=B_computed_slices_E, colors=colors)
-slice_label_excess_plot(B_computed_slices_E, B_computed_slices_ex, B_gamma, colors)
+plt.semilogx( B_E_min , B_on - (B_off / B_alpha ), color='darkgreen', marker=".", linestyle='solid', drawstyle='steps-post', label='N$_{ON}$ - a $^{-1}$ N$_{OFF}$ [std]')
+plt.semilogx( B_E_max , B_on - (B_off / B_alpha ), color='darkgreen', marker=".", linestyle='solid', drawstyle='steps-pre')
+
+plt.semilogx( B_E_min, (B_on - (B_off / B_alpha ) ) + B_err_exc, color='darkgreen', linestyle='--', drawstyle='steps-post', alpha = 0.5)
+plt.semilogx( B_E_max, (B_on - (B_off / B_alpha ) ) + B_err_exc, color='darkgreen', drawstyle='steps-pre', linestyle='--', alpha = 0.5)
+plt.semilogx( B_E_min, (B_on - (B_off / B_alpha ) ) - B_err_exc, color='darkgreen', linestyle='--', drawstyle='steps-post', alpha = 0.5)
+plt.semilogx( B_E_max, (B_on - (B_off / B_alpha ) ) - B_err_exc, color='darkgreen', drawstyle='steps-pre', linestyle='--', alpha = 0.5)
+
+reading_energy_bins(B_on, B_off, B_alpha, B_E_min, B_E_max, colors)
 
 
 plt.legend(fontsize=10,numpoints=1)
@@ -255,31 +278,5 @@ plt.show()
 plt.clf()
 
 
-print("\nPrevious bin choice")
-
-nb_bins    = 4
-P_computed_slices_E, P_computed_slices_ex = slicing_energy_bins(P_on, P_off, P_alpha, P_E_min, P_E_max, nb_bins)
-
-
-plt.semilogx( P_E_min , P_on - (P_off / P_alpha ), color='darkred', marker=".", linestyle='solid', drawstyle='steps-post', label='N$_{ON}$ - a $^{-1}$ N$_{OFF}$ [P]')
-plt.semilogx( P_E_max , P_on - (P_off / P_alpha ), color='darkred', marker=".", linestyle='solid', drawstyle='steps-pre')
-
-
-E_cuts  = [0.3, 0.6, 0.9, 3.0, 100.]
-exc     = 0.
-Ex_cuts = []
-Ex_cuts.append(0.)
-for i in range(0, len(P_on)):
-    exc = exc + (P_on[i] - (P_off[i] / P_alpha[i]))
-    Ex_cuts.append(exc)
-#Ex_cuts.append(sum((P_on - (P_off / P_alpha))))
-
-slice_energy_plot(E_cuts, colors)
-slice_label_excess_plot(E_cuts, Ex_cuts, P_gamma, colors)
-
-
-plt.legend(fontsize=10,numpoints=1)
-plt.show()
-#plt.savefig(names.path_multiEbins_results + 'energy_VS_excess_p'  + '.png', dpi=1000)
 
 

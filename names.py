@@ -20,7 +20,7 @@ display_ds9          = 'y' # yes (y) or no (n) for displaying with ds9 the fit s
 circular_selection   = 'n' # yes (y) or no (n) for selecting a circular region for fitting
 bkg_thaw             = 'n' # yes (y) or no (n) for thawing the background amplitude
 bkg_amplitude        = 1.0 # usually set to 1.0 but could also be +/- 2%
-confidence_levels    = 'y' # yes (y) or no (n) for computing the confidence intervals (time-consuming!)
+confidence_levels    = 'n' # yes (y) or no (n) for computing the confidence intervals (time-consuming!)
 
 
 r_psf_0           = 0
@@ -43,15 +43,16 @@ factor_pix2deg    = 0.
 
 
 ###############################################
-analysis          = 1
+analysis          = 0
 # Tag for the different analyses :
 #     0    : PA 2.0deg 0.3 - 0.6 TeV HiRes
 #     1    : PA 2.0deg 0.6 - 1.2 TeV HiRes
 #     2    : PA 2.0deg 1.2 - 2.4 TeV HiRes
 #     3    : PA 2.0deg > 2.4 TeV HiRes
+#     4    : PA 2.0deg Std
 ###############################################
 
-nb_pa_analyses    = 4
+nb_pa_analyses    = 5
 
 pulsar_then_rebin = 'n' # Check in case one should multiply the x-ray templates before rebinning them --Not fully implemented || Also used for the
 gif_norm          = 'y' # For the normalisation of the colorbar in the gifs generation
@@ -85,21 +86,23 @@ cb_extrema[0,:]         = [1.0, 2.0]
 cb_extrema[1,:]         = [1.0, 1.6]
 cb_extrema[2,:]         = [1.0, 2.0]
 cb_extrema[3,:]         = [1.0, 1.6]
+cb_extrema[4,:]         = [1.0, 2.0]
 
 cb_resids               = np.ndarray((nb_pa_analyses, 2))
 cb_resids[0,:]          = [-4.0, 4.0]
 cb_resids[1,:]          = [-4.0, 4.0]
 cb_resids[2,:]          = [-4.0, 4.0]
 cb_resids[3,:]          = [-3.0, 3.0]
+cb_resids[4,:]          = [-4.0, 4.0]
 
 
 #For the exposure_gamma.py script
-analysis_energy_low        = [0.3, 0.6, 1.2, 2.4]
-analysis_energy_high       = [0.6, 1.2, 2.4, 100.]
+analysis_energy_low        = [0.3, 0.6, 1.2, 2.4, 0.3]
+analysis_energy_high       = [0.6, 1.2, 2.4, 100., 100.]
 
 
-source            = ["MSH15-52---0.3_0.6TeV", "MSH15-52---0.6_1.2TeV","MSH15-52---1.2-2.4TeV","MSH15-52---gt2.4TeV"]
-tags              = ["0-3_0-6TeV", "0-6_1-2TeV", "1-2_2-4TeV", "gt2-4TeV"]
+source            = ["MSH15-52---0.3_0.6TeV", "MSH15-52---0.6_1.2TeV","MSH15-52---1.2-2.4TeV","MSH15-52---gt2.4TeV", "MSH15-52---std"]
+tags              = ["0-3_0-6TeV", "0-6_1-2TeV", "1-2_2-4TeV", "gt2-4TeV", "std"]
 fit_component     = ["xr0","xr0-2G","xr","xr-2G","xr-G1","xr-sh","xr-dc"]
 #fit_component     = ["xr_psf","xr_psf","xr-2G_psf","xr-G1_psf","xr-sh_psf","xr-dc_psf"]
 #fit_component     = ["xr-2G_bkg_d"]
@@ -127,13 +130,13 @@ save_path_gif     = [s + 'GIF/' for s in save_path]
 # Path for all the results txt files (global)
 results_path      = "/home/tsirou/Documents/Analyses/Results/Energy-dependent/MultiEnergyBins/2d0_HiRes_new/"
 
-filename_runs     = ["Results_MSH_15_52_0_3_0_6_TeV_HiRes_Custom_mergedrun_list.txt", "Results_MSH_15_52_0_6_1_2_TeV_HiRes_Custom_mergedrun_list.txt", "Results_MSH_15_52_1_2_2_4_TeV_HiRes_Custom_mergedrun_list.txt", "Results_MSH_15_52_gt2_4_TeV_HiRes_Custom_mergedrun_list.txt"]
+filename_runs     = ["Results_MSH_15_52_0_3_0_6_TeV_HiRes_Custom_mergedrun_list.txt", "Results_MSH_15_52_0_6_1_2_TeV_HiRes_Custom_mergedrun_list.txt", "Results_MSH_15_52_1_2_2_4_TeV_HiRes_Custom_mergedrun_list.txt", "Results_MSH_15_52_gt2_4_TeV_HiRes_Custom_mergedrun_list.txt", "Results_MSH_15_52_ModelPlus_HiRes_mergedrun_list.txt"]
 
-filename_bkg      = ["Results_MSH_15_52_0_3_0_6_TeV_HiRes_Custom_mergedbackground.fits", "Results_MSH_15_52_1_2_2_4_TeV_HiRes_Custom_mergedbackground.fits", "Results_MSH_15_52_gt2_4_TeV_HiRes_Custom_mergedbackground.fits", "Results_MSH_15_52_0_6_1_2_TeV_HiRes_Custom_mergedbackground.fits"]
-filename_gamma    = ["Results_MSH_15_52_1_2_2_4_TeV_HiRes_Custom_mergedgamma-like.fits", "Results_MSH_15_52_gt2_4_TeV_HiRes_Custom_mergedgamma-like.fits", "Results_MSH_15_52_0_3_0_6_TeV_HiRes_Custom_mergedgamma-like.fits",  "Results_MSH_15_52_0_6_1_2_TeV_HiRes_Custom_mergedgamma-like.fits"]
-filename_excess   = ["Results_MSH_15_52_0_3_0_6_TeV_HiRes_Custom_mergedexcess.fits", "Results_MSH_15_52_0_6_1_2_TeV_HiRes_Custom_mergedexcess.fits", "Results_MSH_15_52_gt2_4_TeV_HiRes_Custom_mergedexcess.fits", "Results_MSH_15_52_1_2_2_4_TeV_HiRes_Custom_mergedexcess.fits"]
+filename_bkg      = ["Results_MSH_15_52_0_3_0_6_TeV_HiRes_Custom_mergedbackground.fits", "Results_MSH_15_52_0_6_1_2_TeV_HiRes_Custom_mergedbackground.fits", "Results_MSH_15_52_0_6_1_2_TeV_HiRes_Custom_mergedbackground.fits", "Results_MSH_15_52_gt2_4_TeV_HiRes_Custom_mergedbackground.fits", "Results_MSH_15_52_ModelPlus_HiRes_mergedbackground.fits"]
+filename_gamma    = ["Results_MSH_15_52_0_3_0_6_TeV_HiRes_Custom_mergedgamma-like.fits", "Results_MSH_15_52_0_6_1_2_TeV_HiRes_Custom_mergedgamma-like.fits", "Results_MSH_15_52_1_2_2_4_TeV_HiRes_Custom_mergedgamma-like.fits", "Results_MSH_15_52_gt2_4_TeV_HiRes_Custom_mergedgamma-like.fits", "Results_MSH_15_52_ModelPlus_HiRes_mergedgamma-like.fits"]
+filename_excess   = ["Results_MSH_15_52_0_3_0_6_TeV_HiRes_Custom_mergedexcess.fits", "Results_MSH_15_52_0_6_1_2_TeV_HiRes_Custom_mergedexcess.fits", "Results_MSH_15_52_1_2_2_4_TeV_HiRes_Custom_mergedexcess.fits", "Results_MSH_15_52_gt2_4_TeV_HiRes_Custom_mergedexcess.fits", "Results_MSH_15_52_ModelPlus_HiRes_mergedtexcess.fits"]
 
-filename_psf      = ["psf_MSH_15_52_0_3_0_6_TeV.fits", "psf_MSH_15_52_0_6_1_2_TeV.fits", "psf_MSH_15_52_1_2_2_4_TeV.fits", "psf_MSH_15_52_gt2_4_TeV.fits"]
+filename_psf      = ["psf_MSH_15_52_0_3_0_6_TeV.fits", "psf_MSH_15_52_0_6_1_2_TeV.fits", "psf_MSH_15_52_1_2_2_4_TeV.fits", "psf_MSH_15_52_gt2_4_TeV.fits", "psf_std_HiRes.fits"]
 
 # This exposure maps where first generated by the gammapy script then pixel-corrected by Yves
 filename_expo     = [""] * (nb_pa_analyses)
@@ -169,5 +172,7 @@ filename_Psteps         = "previous/energy_excess_p.dat"
 filename_Nsteps         = "new/data/energy_excess_n.dat"
 filename_Hsteps         = "h_res/data/energy_excess_h.dat"
 filename_NHsteps        = "h_res/data/energy_excess_nh.dat"
+filename_Hnsteps        = "h_res/data/energy_excess_hnew.dat"
+
 
 path_multiEbins_results = path_multiEbins + "plots/"

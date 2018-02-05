@@ -24,8 +24,8 @@ from display import reset_display,make_gif
 fits_files       = []
 zoom             = "all_n"
 
-labels           = [" > 0.3 TeV", "[0.3 - 0.6] TeV", "[0.6 - 0.9] TeV", "[0.9 - 3.0] TeV", " > 3.0 TeV"]
-
+#labels           = [" > 0.3 TeV", "[0.3 - 0.6] TeV", "[0.6 - 0.9] TeV", "[0.9 - 3.0] TeV", " > 3.0 TeV"]
+labels           = ["[0.3 - 0.6] TeV", "[0.6 - 1.2] TeV", "[1.2 - 2.4] TeV", " > 2.4 TeV"]
 
 save_path        = names.path_template[0]
 output_gif_path  = names.path[0]
@@ -266,9 +266,10 @@ def fits_cuts(save_path, output_gif_path, fits_files,zoom):
 
     smooth = 1
 
-    colors = ["yellow","cornflowerblue", "springgreen", "orange", "indianred"]
+    #colors = ["yellow","cornflowerblue", "springgreen", "orange", "indianred"]
+    colors = ["cornflowerblue", "springgreen", "orange", "indianred"]
 
-    for fl in range(1, len(fits_files)):
+    for fl in range(0, len(fits_files)):
 
         progress(fl, len(fits_files), "\n" + labels[fl])
 
@@ -334,7 +335,7 @@ def fits_cuts(save_path, output_gif_path, fits_files,zoom):
 
         img = ndimage.gaussian_filter(source_i, sigma=smooth, order=0)
         image = ax[0].imshow(img, origin="lower", cmap=color_map, vmin=img.min(), vmax=img.max())
-        #image = ax[0].imshow(img, origin="lower", cmap=color_map, vmin=0., vmax=4.0)
+        #image = ax[0].imshow(img, origin="lower", cmap=color_map, vmin=0., vmax=1.2)
 
         cax   = fig.add_axes([0.125, 0.93, 0.585, 0.03 ])
         cbar = fig.colorbar(image, cax=cax,orientation='horizontal')
@@ -411,7 +412,7 @@ def fits_cuts(save_path, output_gif_path, fits_files,zoom):
 
         cut_prof = radial_profile(source_i, [x_psr, y_psr])
         ax[3].plot(cut_prof[:50],'+',color=colors[fl])
-        ax[3].set_ylim(0.,4.0)
+        ax[3].set_ylim(0.,2.0)
         ax[3].set_xlim(0.,40.)
         ax[3].axvline(x=0., ymin=0, ymax=4.0, c="greenyellow", linewidth=2.0, linestyle='--')
 
@@ -423,15 +424,15 @@ def fits_cuts(save_path, output_gif_path, fits_files,zoom):
         ax[3].set_ylabel('Excess')
 
 
-        plt.savefig(output_gif_path + fits_files[fl] + '_energy_distribution_2d0_' + zoom + '.png', dpi=100)
+        plt.savefig(output_gif_path + fits_files[fl] + '_energy_distribution_2d0_ebins_hires' + zoom + '.png', dpi=100)
         plt.clf()
 
         hdu_gif_model.close()
 
-        gif_model.append(output_gif_path + fits_files[fl] + '_energy_distribution_2d0_' + zoom + '.png')
+        gif_model.append(output_gif_path + fits_files[fl] + '_energy_distribution_2d0_ebins_hires' + zoom + '.png')
 
     make_gif(files=list(reversed(gif_model)), delay=160,
-             output=output_gif_path + "energy-dependent_excess_distribution_2d0_" + zoom + ".gif")
+             output=output_gif_path + "energy-dependent_excess_distribution_2d0_ebins_hires" + zoom + ".gif")
 
 
     return
