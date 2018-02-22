@@ -964,6 +964,8 @@ def fit_msh1552_xfact_comp(dim,bkg_option,psf_gauss,psr_alpha,xampl):
     if(names.circular_selection.find('y') != -1):
         # Selecting a region for the fit procedure
         sherpa.notice2d("circle("+str(dim/2 + 0.5)+","+str(dim/2 + 0.5)+","+str(dim/4)+")")
+    if(names.sliced_selection.find('y') != -1):
+        sherpa.notice2d("box(" + str(names.boxes[0]) + "," + str(names.boxes[1]) + "," + str(names.boxes[2]) + "," + str(names.boxes[3]) + "," + str(names.boxes[4]) + ")")
 
     # Using the parameter for the background and adding a gaussian fit for the source
 

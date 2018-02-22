@@ -43,7 +43,7 @@ factor_pix2deg    = 0.
 
 
 ###############################################
-analysis          = 3
+analysis          = 4
 # Tag for the different analyses :
 #     0    : PA 2.0deg 0.3 - 0.6 TeV HiRes
 #     1    : PA 2.0deg 0.6 - 1.2 TeV HiRes

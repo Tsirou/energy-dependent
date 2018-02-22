@@ -58,7 +58,7 @@ if(names.psf_fudge != -1):
     fit_fudged_psf(dim_im)
 
 component_list_index_start   = 0 # 7 # 0 # 4 #
-component_list_index_end     = len(names.fit_component) # 4 # 7
+component_list_index_end     = 4 # len(names.fit_component) # 4 # 7
 
 for t in range(component_list_index_start, component_list_index_end):
 
