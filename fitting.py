@@ -1038,6 +1038,9 @@ def fit_msh1552_xfact_comp(dim,bkg_option,psf_gauss,psr_alpha,xampl):
         if(psf_gauss.find("dc") != -1):
             if(bkg_option.find("gam") != -1):
                 sherpa.set_full_model(bkg_mod + hPSF2( (xrays_mod + sherpa.disk2d.disc)) * exposure)
+        if(psf_gauss.find("Sc") != -1):
+            if(bkg_option.find("gam") != -1):
+                sherpa.set_full_model(bkg_mod + hPSF2( (xrays_mod + sherpa.sersic2d.gcomp)) * exposure)
 
 
 
@@ -1105,7 +1108,29 @@ def fit_msh1552_xfact_comp(dim,bkg_option,psf_gauss,psr_alpha,xampl):
             sherpa.freeze(disc.ypos)
             sherpa.freeze(disc.ampl)            
             sherpa.freeze(disc.r0)
-        
+
+
+        if(psf_gauss.find("Sc") != -1):
+            gcomp.xpos   =   names.X_psr
+            gcomp.ypos   =   names.Y_psr
+            gcomp.ellip  =   0
+            gcomp.theta  =   0
+            gcomp.ampl   =   names.G_comp_ampl[names.analysis]
+            gcomp.r0     =   names.fwhm_init
+            gcomp.n      =   0.1
+            sherpa.set_par(gcomp.ampl, min=0.)
+            sherpa.set_par(gcomp.xpos, min = dim/4., max = 3 * dim/4.)
+            sherpa.set_par(gcomp.ypos, min = dim/4., max = 3 * dim/4.)
+
+            sherpa.freeze(gcomp.xpos)
+            sherpa.freeze(gcomp.ypos)
+            sherpa.freeze(gcomp.ellip)
+            sherpa.freeze(gcomp.theta)
+            sherpa.freeze(gcomp.ampl)
+            sherpa.freeze(gcomp.r0)
+
+            sherpa.freeze(gcomp.n)
+
         sherpa.fit()
 
         if(names.display_ds9.find('y') != -1 ):
@@ -1237,6 +1262,41 @@ def fit_msh1552_xfact_comp(dim,bkg_option,psf_gauss,psr_alpha,xampl):
             sherpa.thaw(disc.xpos)
             sherpa.thaw(disc.ypos)
 
+        if (psf_gauss.find("Sc") != -1 ):
+
+            sherpa.fit()
+            if (names.display_ds9.find('y') != -1):
+                sherpa.image_fit()
+
+            sherpa.thaw(gcomp.n)
+
+            sherpa.fit()
+            if (names.display_ds9.find('y') != -1):
+                sherpa.image_fit()
+
+            sherpa.thaw(gcomp.ellip)
+            sherpa.thaw(gcomp.theta)
+
+            sherpa.fit()
+            if (names.display_ds9.find('y') != -1):
+                sherpa.image_fit()
+
+            sherpa.thaw(gcomp.ampl)
+
+            sherpa.fit()
+            if (names.display_ds9.find('y') != -1):
+                sherpa.image_fit()
+
+            sherpa.thaw(gcomp.r0)
+
+            sherpa.fit()
+            if (names.display_ds9.find('y') != -1):
+                sherpa.image_fit()
+
+            if (psf_gauss.find("Sc") != -1 and psf_gauss.find("P") == -1):
+                sherpa.thaw(gcomp.xpos)
+                sherpa.thaw(gcomp.ypos)
+
 
     sherpa.fit()
     if (names.display_ds9.find('y') != -1):
@@ -1272,8 +1332,10 @@ def fit_msh1552_xfact_comp(dim,bkg_option,psf_gauss,psr_alpha,xampl):
         elliptical   = [shell.xpos.val,shell.ypos.val,shell.r0.val,shell.width.val,shell.ampl.val,xrays_mod.ampl.val,shell.ampl.val]
     if(psf_gauss.find("dc") != -1):    
         elliptical   = [disc.xpos.val,disc.ypos.val,disc.r0.val,disc.ampl.val,bkg_mod.ampl.val,xrays_mod.ampl.val,disc.ampl.val]
-    if(psf_gauss.find("G") == -1 and psf_gauss.find("sh") == -1 and psf_gauss.find("dc") == -1):
+    if(psf_gauss.find("G") == -1 and psf_gauss.find("sh") == -1 and psf_gauss.find("dc") == -1 and psf_gauss.find("Sc") == -1):
         elliptical   = [xrays_mod.ampl.val]
+    if(psf_gauss.find("Sc") != -1):
+        elliptical   = [gcomp.xpos.val,gcomp.ypos.val,gcomp.r0.val,gcomp.ellip.val,gcomp.theta.val,xrays_mod.ampl.val,gcomp.ampl.val,gcomp.n.val]
 
     
     sherpa.save_model(names.save_path[names.analysis] + names.filename_gamma[names.analysis][:-5] + "_" + psf_gauss[:3] + bkg_option[:3] + psr_alpha + "_model.fits",clobber=True)

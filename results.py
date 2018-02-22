@@ -346,7 +346,24 @@ def quick_results(save_fit, psf_gauss, name_file, elliptical,alpha,stat,dof):
         print "r0          : ",comp_r0,"\n"
 
 
-    if(psf_gauss.find("G") == -1 and psf_gauss.find("sh") == -1 and psf_gauss.find("dc") == -1):
+    if(psf_gauss.find("Sc") != -1):
+        xray_ampl  = elliptical[5]
+        comp_ampl  = elliptical[6]
+        comp_xpos  = elliptical[0]
+        comp_ypos  = elliptical[1]
+        comp_ellip = elliptical[3]
+        comp_theta = elliptical[4]
+        comp_fwhm  = elliptical[2]
+        comp_n     = elliptical[7]
+
+        print "X           : ",comp_xpos
+        print "Y           : ",comp_ypos
+        print "ellipticity : ",comp_ellip
+        print "theta       : ",comp_theta
+        print "r0          : ",comp_fwhm
+        print "Sersic n    : ",comp_n,"\n"
+
+    if(psf_gauss.find("G") == -1 and psf_gauss.find("sh") == -1 and psf_gauss.find("dc") == -1 and psf_gauss.find("Sc") == -1):
         xray_ampl = elliptical[0]
         print "X-ray amplitude : ", xray_ampl
 
@@ -433,7 +450,7 @@ def quick_errors(save_fit_true,save_fit, psf_gauss,elliptical, configuration):
 
     print("\n ***********\n **********\n ________________________\n ####### Results ######\n")
     print("Object      : " + names.source[names.analysis] + "\n")
-    print("Fit : " + names.tags[names.analysis] + " with " + names.fit_component[names.analysis])
+    print("Fit : " + names.tags[names.analysis] + " with " + names.fit_component[configuration])
     print("Alpha parameter : " + str(names.alpha_factor_pa[configuration]))
 
     nf, cash_stats = np.loadtxt(saved_fitinfo, dtype=float, usecols=(0, 1), unpack=True, skiprows=1)
@@ -475,6 +492,11 @@ def quick_errors(save_fit_true,save_fit, psf_gauss,elliptical, configuration):
             param_names = ["r0", "xpos", "ypos", "width", "xrays_mod.ampl", "shell.ampl"]
         if (psf_gauss.find("dc") != -1):
             param_names = ["r0", "xpos", "ypos", "xrays_mod.ampl", "disc.ampl"]
+        if (psf_gauss.find("Sc") != -1 and psf_gauss.find("P") == -1):
+            param_names = ["r0", "xpos", "ypos", "ellip", "theta", "xrays_mod.ampl", "gcomp.ampl", "gcomp.n"]
+        if (psf_gauss.find("Sc") != -1 and psf_gauss.find("P") != -1):
+            param_names = ["r0", "ellip", "theta", "xrays_mod.ampl", "gcomp.ampl", "gcomp.n"]
+
     else:
         if (psf_gauss.find("G1") != -1 and psf_gauss.find("2G1") == -1):
             param_names = ["fwhm", "xpos", "ypos", "ellip", "theta"]
@@ -517,14 +539,7 @@ def quick_errors(save_fit_true,save_fit, psf_gauss,elliptical, configuration):
                     if (j > 2 and j < len(temp) - 1):
                         if (temp[j].split()[0].split(",")[0].find('None') != -1 or temp[j].split()[0].split(",")[0] == None or type(temp[j].split()[0].split(",")[0]) == str):
                             temp[j].split()[0].split(",")[0] = 0
-                        #     print("Hello")
-                        #     print(temp[j].split()[0].split(",")[0])
-                        #     print(len(temp[j].split()[0].split()))
-                        #     print("Goodbye")
-                        #
-                        # print(temp[j].split()[0].split(",")[0])
-                        # print(temp[j].split()[0].split(",")[0].find('None'))
-                        # print(type(temp[j].split()[0].split(",")[0]))
+
                         data[k][j - 2] = float(temp[j].split()[0].split(",")[0])
 
     print("\n Parameter results (from the image):\n")
@@ -579,97 +594,161 @@ def quick_errors(save_fit_true,save_fit, psf_gauss,elliptical, configuration):
             comp_ypos = elliptical[1]
             comp_r0   = elliptical[2]
 
-        if (psf_gauss.find("G") == -1 and psf_gauss.find("sh") == -1 and psf_gauss.find("dc") == -1):
+        if (psf_gauss.find("Sc") != -1):
+            xray_ampl = elliptical[5]
+            comp_ampl = elliptical[6]
+            comp_xpos = elliptical[0]
+            comp_ypos = elliptical[1]
+            comp_ellip = elliptical[3]
+            comp_theta = elliptical[4]
+            comp_fwhm  = elliptical[2]
+            comp_n     = elliptical[7]
+
+        if (psf_gauss.find("G") == -1 and psf_gauss.find("sh") == -1 and psf_gauss.find("dc") == -1 and psf_gauss.find("Sc") == -1):
             xray_ampl = elliptical[0]
 
+        else:
 
-        else :
+            if (psf_gauss.find("Sc") != -1 and psf_gauss.find("P") != -1):
+                binsize    = 0.01
+                pic_center = 200.5
 
-            binsize    = 0.01
-            pic_center = 200.5
+                coord1, coord2     = conversion.convert_image(ra_psr, dec_psr, pic_center, comp_xpos, comp_ypos, binsize)
 
-            coord1, coord2     = conversion.convert_image(ra_psr, dec_psr, pic_center, comp_xpos, comp_ypos, binsize)
+                equ            = SkyCoord(ra=coord1, dec=coord2, unit='deg')
 
-            ref1, ref2         = conversion.convert_image(ra_psr,dec_psr,pic_center,0.,0.,binsize)
-            err1_min, err2_min = conversion.convert_image(ra_psr, dec_psr, pic_center, val_min[1][0], 0., binsize)
-            error1_min         = abs(err1_min - ref1)
-            err1_min, err2_min = conversion.convert_image(ra_psr, dec_psr, pic_center, 0., val_min[2][0], binsize)
-            error2_min         = abs(err2_min - ref2)
+                print "Frozen PSR coordinates."
 
-            err1_max, err2_max = conversion.convert_image(ra_psr, dec_psr, pic_center, val_max[1][0], 0.,binsize)
-            error1_max         = abs(err1_max - ref1)
-            err1_max, err2_max = conversion.convert_image(ra_psr, dec_psr, pic_center, 0., val_max[2][0],binsize)
-            error2_max         = abs(err2_max - ref2)
+                print "l : ", equ.galactic.l.deg
+                print "b : ", equ.galactic.b.deg
 
-            equ            = SkyCoord(ra=coord1, dec=coord2, unit='deg')
-            equ_err_min    = SkyCoord(ra=error1_min, dec=error2_min, unit='deg')
-            equ_err_max    = SkyCoord(ra=error1_max, dec=error2_max, unit='deg')
+                conversion.convert_deg2timearcs(equ.ra.deg, equ.dec.deg)
 
-            print "l : ", equ.galactic.l.deg," - ",equ_err_min.galactic.l.deg," + ",equ_err_max.galactic.l.deg
-            print "b : ", equ.galactic.b.deg," - ",equ_err_min.galactic.b.deg," + ",equ_err_max.galactic.b.deg
+                print "X-ray amplitude ", xray_ampl, "- / + ", val_min[0][0], val_max[0][0]
 
-            conversion.convert_deg2timearcs(equ.ra.deg, equ.dec.deg)
-            print "Error for the RA  : ", equ_err_min.ra.deg *12*3600/180., equ_err_max.ra.deg * 12 * 3600 / 180.
-            print "Error for the DEC : ", equ_err_min.dec.deg *3600, equ_err_max.dec.deg * 3600
+                print "\nComponent amplitude / X-ray amplitude :", val[4][0] / val[3][0]," - / + ",val[4][0] / val[3][0] * (val_min[4][0] / val[3][0] + val_min[3][0]/val[3][0]),val[4][0] / val[3][0] * (val_max[4][0] / val[4][0] + val_max[3][0]/val[3][0]),"\n"
 
-            print "X-ray amplitude ", xray_ampl, "- / + ", val_min[0][0], val_max[0][0]
+                sys.stdout.write("\n Characteristics of the Sersic profile :\n")
 
-            if (psf_gauss.find("G1") != -1 and psf_gauss.find("2G1") == -1):
-
-                print "\nComponent amplitude / X-ray amplitude :", val[6][0] / val[5][0]," - / + ",val[6][0] / val[5][0] * (val_min[6][0] / val[6][0] + val_min[5][0]/val[5][0]),val[6][0] / val[5][0] * (val_max[6][0] / val[6][0] + val_max[5][0]/val[5][0]),"\n"
-
-                sys.stdout.write("\n Coordinates of the asymetrical gaussian :\n")
+                print "Sersic index n = ",comp_n
 
                 print "Major axis :", conversion.fwhm_sigma(comp_fwhm, binsize), " - / +",conversion.fwhm_sigma(val_min[0][0],binsize),conversion.fwhm_sigma(val_max[0][0],binsize),"arcmin\n"
 
                 print "Minor axis :", conversion.fwhm_sigma(comp_fwhm * (1 - comp_ellip), binsize),"arcmin\n"
 
                 if (comp_theta >= 0.):
-                    print "Inclination : ", comp_theta * 180. / np.pi,"- / + ", val_min[4][0] * 180. / np.pi,val_max[4][0] * 180. / np.pi,"degrees \n"
+                    print "Inclination : ", comp_theta * 180. / np.pi,"- / + ", val_min[2][0] * 180. / np.pi,val_max[2][0] * 180. / np.pi,"degrees \n"
                 if (comp_theta < 0.):
-                    print "Inclination : ", (360. + (comp_theta * 180. / np.pi)),"- / + ",(360. + (val_min[4][0] * 180. / np.pi)),(360. + (val_max[4][0] * 180. / np.pi)), "degrees\n"
+                    print "Inclination : ", (360. + (comp_theta * 180. / np.pi)),"- / + ",(360. + (val_min[2][0] * 180. / np.pi)),(360. + (val_max[2][0] * 180. / np.pi)), "degrees\n"
 
-            if (psf_gauss.find("2G") != -1):
-                # Carefull!! the error bars for the fraction are not well computated
-                print "\nComponent amplitude / X-ray amplitude :", val[4][0] / (val[3][0] + val[4][0]),\
-                    " - / + ",val[4][0] / val[3][0] * (val_min[4][0] / val[4][0] + val_min[3][0]/val[3][0]),val[4][0] / val[3][0] * (val_max[4][0] / val[4][0] + val_max[3][0]/val[3][0]),"\n"
-
-                intG   = val[4][0] * 2. * np.pi * (comp_fwhm / (2. * np.sqrt(2. * np.log(2.))))**2
-                intG_X = intG/ ( val[3][0] + intG)
-                ern_A_ = val_min[4][0] / val[4][0]
-                ern_X  = val_min[3][0] / val[3][0]
-                ern_s2 = 2. * (comp_fwhm / (2. * np.sqrt(2. * np.log(2.))) / (val_min[0][0])/ (2. * np.sqrt(2. * np.log(2.))))
-                erp_A  = val_max[4][0] / val[4][0]
-                erp_X  = val_max[3][0] / val[3][0]
-                erp_s2 = 2. * (comp_fwhm / (2. * np.sqrt(2. * np.log(2.))) / (val_max[0][0])/ (2. * np.sqrt(2. * np.log(2.))))
+                print "Sersic profile : "
+                sersic   = conversion.Sersic_profile(comp_n, comp_fwhm, comp_ellip, comp_theta, comp_xpos, comp_ypos, comp_ampl)
 
 
-                print "\nIntegral of the Gaussian / X-ray amplitude :   ", intG_X,\
-                    " - / + ",intG_X * ( ern_A_+ ern_X + ern_s2)**-1 ,\
-                    intG_X * (erp_A + erp_X + erp_s2)**-1,"\n"
+            else :
 
-                print "Intrinsic s :", conversion.fwhm_sigma(comp_fwhm, binsize), " - / +",conversion.fwhm_sigma(val_min[0][0],binsize),conversion.fwhm_sigma(val_max[0][0],binsize), "\n"
+                binsize    = 0.01
+                pic_center = 200.5
+
+                coord1, coord2     = conversion.convert_image(ra_psr, dec_psr, pic_center, comp_xpos, comp_ypos, binsize)
+
+                ref1, ref2         = conversion.convert_image(ra_psr,dec_psr,pic_center,0.,0.,binsize)
+                err1_min, err2_min = conversion.convert_image(ra_psr, dec_psr, pic_center, val_min[1][0], 0., binsize)
+                error1_min         = abs(err1_min - ref1)
+                err1_min, err2_min = conversion.convert_image(ra_psr, dec_psr, pic_center, 0., val_min[2][0], binsize)
+                error2_min         = abs(err2_min - ref2)
+
+                err1_max, err2_max = conversion.convert_image(ra_psr, dec_psr, pic_center, val_max[1][0], 0.,binsize)
+                error1_max         = abs(err1_max - ref1)
+                err1_max, err2_max = conversion.convert_image(ra_psr, dec_psr, pic_center, 0., val_max[2][0],binsize)
+                error2_max         = abs(err2_max - ref2)
+
+                equ            = SkyCoord(ra=coord1, dec=coord2, unit='deg')
+                equ_err_min    = SkyCoord(ra=error1_min, dec=error2_min, unit='deg')
+                equ_err_max    = SkyCoord(ra=error1_max, dec=error2_max, unit='deg')
+
+                print "l : ", equ.galactic.l.deg," - ",equ_err_min.galactic.l.deg," + ",equ_err_max.galactic.l.deg
+                print "b : ", equ.galactic.b.deg," - ",equ_err_min.galactic.b.deg," + ",equ_err_max.galactic.b.deg
+
+                conversion.convert_deg2timearcs(equ.ra.deg, equ.dec.deg)
+                print "Error for the RA  : ", equ_err_min.ra.deg *12*3600/180., equ_err_max.ra.deg * 12 * 3600 / 180.
+                print "Error for the DEC : ", equ_err_min.dec.deg *3600, equ_err_max.dec.deg * 3600
+
+                print "X-ray amplitude ", xray_ampl, "- / + ", val_min[0][0], val_max[0][0]
+
+                if (psf_gauss.find("G1") != -1 and psf_gauss.find("2G1") == -1):
+
+                    print "\nComponent amplitude / X-ray amplitude :", val[6][0] / val[5][0]," - / + ",val[6][0] / val[5][0] * (val_min[6][0] / val[6][0] + val_min[5][0]/val[5][0]),val[6][0] / val[5][0] * (val_max[6][0] / val[6][0] + val_max[5][0]/val[5][0]),"\n"
+
+                    sys.stdout.write("\n Coordinates of the asymetrical gaussian :\n")
+
+                    print "Major axis :", conversion.fwhm_sigma(comp_fwhm, binsize), " - / +",conversion.fwhm_sigma(val_min[0][0],binsize),conversion.fwhm_sigma(val_max[0][0],binsize),"arcmin\n"
+
+                    print "Minor axis :", conversion.fwhm_sigma(comp_fwhm * (1 - comp_ellip), binsize),"arcmin\n"
+
+                    if (comp_theta >= 0.):
+                        print "Inclination : ", comp_theta * 180. / np.pi,"- / + ", val_min[4][0] * 180. / np.pi,val_max[4][0] * 180. / np.pi,"degrees \n"
+                    if (comp_theta < 0.):
+                        print "Inclination : ", (360. + (comp_theta * 180. / np.pi)),"- / + ",(360. + (val_min[4][0] * 180. / np.pi)),(360. + (val_max[4][0] * 180. / np.pi)), "degrees\n"
+
+                if (psf_gauss.find("2G") != -1):
+                    # Carefull!! the error bars for the fraction are not well computated
+                    print "\nComponent amplitude / X-ray amplitude :", val[4][0] / (val[3][0] + val[4][0]),\
+                        " - / + ",val[4][0] / val[3][0] * (val_min[4][0] / val[4][0] + val_min[3][0]/val[3][0]),val[4][0] / val[3][0] * (val_max[4][0] / val[4][0] + val_max[3][0]/val[3][0]),"\n"
+
+                    intG   = val[4][0] * 2. * np.pi * (comp_fwhm / (2. * np.sqrt(2. * np.log(2.))))**2
+                    intG_X = intG/ ( val[3][0] + intG)
+                    ern_A_ = val_min[4][0] / val[4][0]
+                    ern_X  = val_min[3][0] / val[3][0]
+                    ern_s2 = 2. * (comp_fwhm / (2. * np.sqrt(2. * np.log(2.))) / (val_min[0][0])/ (2. * np.sqrt(2. * np.log(2.))))
+                    erp_A  = val_max[4][0] / val[4][0]
+                    erp_X  = val_max[3][0] / val[3][0]
+                    erp_s2 = 2. * (comp_fwhm / (2. * np.sqrt(2. * np.log(2.))) / (val_max[0][0])/ (2. * np.sqrt(2. * np.log(2.))))
+
+                    print "\nIntegral of the Gaussian / X-ray amplitude :   ", intG_X,\
+                        " - / + ",intG_X * ( ern_A_+ ern_X + ern_s2)**-1 ,\
+                        intG_X * (erp_A + erp_X + erp_s2)**-1,"\n"
+
+                    print "Intrinsic s :", conversion.fwhm_sigma(comp_fwhm, binsize), " - / +",conversion.fwhm_sigma(val_min[0][0],binsize),conversion.fwhm_sigma(val_max[0][0],binsize), "\n"
+
+                if (psf_gauss.find("sh") != -1):
+
+                    print "\nComponent amplitude / X-ray amplitude :", val[5][0] / val[4][0]," - / + ",val[5][0] / val[4][0] * (val_min[5][0] / val[5][0] + val_min[4][0]/val[4][0]),val[5][0] / val[4][0] * (val_max[5][0] / val[5][0] + val_max[4][0]/val[4][0]),"\n"
+
+                    print "Inner radius : ", conversion.fwhm_sigma(comp_r0, binsize),  " - / +",conversion.fwhm_sigma(val_min[0][0],binsize),conversion.fwhm_sigma(val_max[0][0],binsize),"\n"
+                    print "Outer radius : ", conversion.fwhm_sigma(comp_r0 + comp_width, binsize),  " - / +",conversion.fwhm_sigma(val_min[0][0] + val_min[3][0],binsize),conversion.fwhm_sigma(val_max[0][0] + val_max[3][0],binsize),"\n"
+                    print "Width        : ", conversion.fwhm_sigma(comp_width, binsize),  " - / +",conversion.fwhm_sigma(val_min[3][0],binsize),conversion.fwhm_sigma(val_max[3][0],binsize),"\n"
+
+                if (psf_gauss.find("dc") != -1):
+
+                    print "\nComponent amplitude / X-ray amplitude :", val[4][0] / val[3][0]," - / + ",val[4][0] / val[3][0] * (val_min[4][0] / val[4][0] + val_min[3][0]/val[3][0]),val[4][0] / val[3][0] * (val_max[4][0] / val[4][0] + val_max[3][0]/val[3][0]),"\n"
+
+                    print "Disk radius  : ", conversion.fwhm_sigma(comp_r0, binsize), " - / +",conversion.fwhm_sigma(val_min[0][0],binsize),conversion.fwhm_sigma(val_max[0][0],binsize),"arcmin\n"
 
 
-            if (psf_gauss.find("sh") != -1):
+                if (psf_gauss.find("Sc") != -1):
 
-                print "\nComponent amplitude / X-ray amplitude :", val[5][0] / val[4][0]," - / + ",val[5][0] / val[4][0] * (val_min[5][0] / val[5][0] + val_min[4][0]/val[4][0]),val[5][0] / val[4][0] * (val_max[5][0] / val[5][0] + val_max[4][0]/val[4][0]),"\n"
+                    print "\nComponent amplitude / X-ray amplitude :", val[6][0] / val[5][0]," - / + ",val[6][0] / val[5][0] * (val_min[6][0] / val[6][0] + val_min[5][0]/val[5][0]),val[6][0] / val[5][0] * (val_max[6][0] / val[6][0] + val_max[5][0]/val[5][0]),"\n"
 
+                    sys.stdout.write("\n Coordinates of the Sersic component :\n")
 
-                print "Inner radius : ", conversion.fwhm_sigma(comp_r0, binsize),  " - / +",conversion.fwhm_sigma(val_min[0][0],binsize),conversion.fwhm_sigma(val_max[0][0],binsize),"\n"
-                print "Outer radius : ", conversion.fwhm_sigma(comp_r0 + comp_width, binsize),  " - / +",conversion.fwhm_sigma(val_min[0][0] + val_min[3][0],binsize),conversion.fwhm_sigma(val_max[0][0] + val_max[3][0],binsize),"\n"
-                print "Width        : ", conversion.fwhm_sigma(comp_width, binsize),  " - / +",conversion.fwhm_sigma(val_min[3][0],binsize),conversion.fwhm_sigma(val_max[3][0],binsize),"\n"
+                    print "Sersic index n : ", val[7][0]," - / +",val_min[7][0],val_max[7][0]
 
-            if (psf_gauss.find("dc") != -1):
+                    print "Major axis :", conversion.fwhm_sigma(comp_fwhm, binsize), " - / +",conversion.fwhm_sigma(val_min[0][0],binsize),conversion.fwhm_sigma(val_max[0][0],binsize),"arcmin\n"
 
-                print "\nComponent amplitude / X-ray amplitude :", val[4][0] / val[3][0]," - / + ",val[4][0] / val[3][0] * (val_min[4][0] / val[4][0] + val_min[3][0]/val[3][0]),val[4][0] / val[3][0] * (val_max[4][0] / val[4][0] + val_max[3][0]/val[3][0]),"\n"
+                    print "Minor axis :", conversion.fwhm_sigma(comp_fwhm * (1 - comp_ellip), binsize),"arcmin\n"
 
-                print "Disk radius  : ", conversion.fwhm_sigma(comp_r0, binsize), " - / +",conversion.fwhm_sigma(val_min[0][0],binsize),conversion.fwhm_sigma(val_max[0][0],binsize),"arcmin\n"
+                    if (comp_theta >= 0.):
+                        print "Inclination : ", comp_theta * 180. / np.pi,"- / + ", val_min[4][0] * 180. / np.pi,val_max[4][0] * 180. / np.pi,"degrees \n"
+                    if (comp_theta < 0.):
+                        print "Inclination : ", (360. + (comp_theta * 180. / np.pi)),"- / + ",(360. + (val_min[4][0] * 180. / np.pi)),(360. + (val_max[4][0] * 180. / np.pi)), "degrees\n"
 
+                    print "Sersic profile : "
+                    sersic   = conversion.Sersic_profile(comp_n, comp_fwhm, comp_ellip, comp_theta, comp_xpos, comp_ypos, comp_ampl)
 
-    if (nb_displays == 2):
-        sys.stdout.close()
-        sys.stdout = temporary
+        if (nb_displays == 2):
+            sys.stdout.close()
+            sys.stdout = temporary
 
     return
 

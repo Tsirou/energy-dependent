@@ -178,7 +178,6 @@ def crop(a,new_dim):
     b       = a[dim_res:len(a)-dim_res,dim_res:len(a)-dim_res]
     return b
 
-
 # ==============================================================================
 # Circular cropping function
 def crop_circle(a, rad):
@@ -326,16 +325,7 @@ def affine(x,x1,y1,x2,y2):
 
     return a * x + b
 
-# Radial profile estimation [Found on the web]
-def radial_profile(data, center):
-    x, y = np.indices((data.shape))
-    r    = np.sqrt((x - center[0])**2 + (y - center[1])**2)
-    r    = r.astype(np.int)
-
-    tbin = np.bincount(r.ravel(), data.ravel())
-    nr   = np.bincount(r.ravel())
-    rp   = tbin / nr
-    return rp
+#==============================================================================
 
 # !
 def factorial(n):
@@ -358,6 +348,47 @@ def Hermite_polynoms(x,n):
         H = factorial(n) * sum_H
 
     return H
+
+# Sersic profile [used in Sherpa]
+def Sersic_profile(n, r_0, epsilon, theta, x_o, y_o, A):
+
+    print "f(x,y) = f(r) = A exp[-b(n) (z^(1/n) - 1)]"
+
+    x   = np.arange(400)
+    y   = np.arange(400)
+
+    b    = 2.0 * n - 1./3. + 4.0/(405*n) + 46./(25515.0*(n**2))
+
+    #print "b   = ",b
+
+    r_maj   = r_0
+    r_min   = (1 - epsilon) * r_0
+
+    x_maj   = (x - x_o) * np.cos(theta) + (y - y_o) * np.sin(theta)
+    x_min   = -(x - x_o) * np.sin(theta) + (y - y_o) * np.cos(theta)
+
+    z   = np.sqrt( (x_maj / r_maj)** 2 + (x_min / r_min)**2)
+
+    #print "z   =",z
+
+    sersic_f   = A * np.exp(-1.0 * b * (z**(1.0/n) - 1.))
+
+    #print "f(x.y)",sersic_f
+
+    return sersic_f
+
+#==============================================================================
+
+# Radial profile estimation [Found on the web]
+def radial_profile(data, center):
+    x, y = np.indices((data.shape))
+    r    = np.sqrt((x - center[0])**2 + (y - center[1])**2)
+    r    = r.astype(np.int)
+
+    tbin = np.bincount(r.ravel(), data.ravel())
+    nr   = np.bincount(r.ravel())
+    rp   = tbin / nr
+    return rp
 
 # GDL/IDL procedure to correct the gammapy generated maps with the PA pixel projection
 def pixarea_correction(exposure_fits, ra, dec, resolution, corr_exposure_fits):

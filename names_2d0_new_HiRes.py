@@ -43,19 +43,19 @@ factor_pix2deg    = 0.
 
 
 ###############################################
-analysis          = 1
+analysis          = 3
 # Tag for the different analyses :
-#     0    : PA 2.0deg std
-#     1    : PA 2.0deg 300 - 600 GeV
-#     2    : PA 2.0deg 600 - 900 GeV
-#     3    : PA 2.0deg 0.9 - 3.0 TeV
-#     4    : PA 2.0deg > 3.0 TeV
+#     0    : PA 2.0deg 0.3 - 0.6 TeV HiRes
+#     1    : PA 2.0deg 0.6 - 1.2 TeV HiRes
+#     2    : PA 2.0deg 1.2 - 2.4 TeV HiRes
+#     3    : PA 2.0deg > 2.4 TeV HiRes
+#     4    : PA 2.0deg Std HiRes
 ###############################################
 
 nb_pa_analyses    = 5
 
 pulsar_then_rebin = 'n' # Check in case one should multiply the x-ray templates before rebinning them --Not fully implemented || Also used for the
-gif_norm          = 'y' # For the normalisation of the colorbar in the gifs generation
+gif_norm          = 'n' # For the normalisation of the colorbar in the gifs generation
 
 psf_fudge         = -1  # 0.02 or -1 value in sigma degrees! Has to be converted into pixels. If there is no fudge factor then insert -1
 
@@ -65,51 +65,40 @@ dim_for_a         = '400x400'
 # For the hdu FITS extensions for the gamma-like maps
 hdu_ext = 1  # 0 for gammapy maps, 1 for PA
 
-# psf_fudge and bkg_amplitude arguments for the systematics estimation
-# if(analysis == 0 ):
-#     alpha_factor_pa   = [0.0, 0.0, 1.28, 1.28, 1.27, 1.06, 0.99]
-# if(analysis == 1 ):
-#     alpha_factor_pa   = [0.0, 0.0, 1.48, 1.38, 1.37, 1.23, 1.23]
-# if(analysis == 2 ):
-#     alpha_factor_pa   = [0.0, 0.0, 1.19, 1.05, 1.01, 0.99, 1.03]
-# if(analysis == 3 ):
-#     alpha_factor_pa   = [0.0, 0.0, 1.37, 1.7, 1.9, 1.32, 1.7]
-# if(analysis == 4 ):
-#     alpha_factor_pa   = [0.0, 0.0, 0.69, 0.27, 0.15, 0.17, 0.54]
-
-alpha_factor_pa   = [0.0, 0.0, 1.3, 1.3, 1.3, 1.3, 1.3] # when alpha is frozen to ~ the best fit value for the Std cut model + 2G
-
 
 # Display GIF normalisation for the colorbar
 cb_extrema              = np.ndarray((nb_pa_analyses, 2))
-cb_extrema[0,:]         = [1.0, 4.0]
-cb_extrema[1,:]         = [1.0, 2.0]
-cb_extrema[2,:]         = [1.0, 1.6]
-cb_extrema[3,:]         = [1.0, 2.0]
-cb_extrema[4,:]         = [1.0, 1.6]
+cb_extrema[0,:]         = [0.3, 1.0]
+cb_extrema[1,:]         = [0.3, 1.3]
+cb_extrema[2,:]         = [0.3, 1.2]
+cb_extrema[3,:]         = [0.3, 1.1]
+cb_extrema[4,:]         = [1.0, 4.0]
 
 cb_resids               = np.ndarray((nb_pa_analyses, 2))
-cb_resids[0,:]          = [-10.0, 10.0]
-cb_resids[1,:]          = [-4.0, 4.0]
-cb_resids[2,:]          = [-4.0, 4.0]
-cb_resids[3,:]          = [-4.0, 4.0]
+cb_resids[0,:]          = [-3.0, 3.0]
+cb_resids[1,:]          = [-3.0, 3.0]
+cb_resids[2,:]          = [-3.0, 3.0]
+cb_resids[3,:]          = [-3.0, 3.0]
 cb_resids[4,:]          = [-3.0, 3.0]
 
 
 #For the exposure_gamma.py script
-analysis_energy_low        = [0.3, 0.3, 0.6, 0.9, 3.0]
-analysis_energy_high       = [100., 0.6, 0.9, 3.0, 100.]
+analysis_energy_low        = [0.3, 0.6, 1.2, 2.4, 0.3]
+analysis_energy_high       = [0.6, 1.2, 2.4, 100., 100.]
 
 
-source            = ["MSH15-52---std","MSH15-52---300_600GeV", "MSH15-52---600_900GeV","MSH15-52---0.9-3.0TeV","MSH15-52---gt3TeV"]
-tags              = ["std", "0-3_0-6TeV", "0-6_0-9TeV", "0-9_3-0TeV", "gt3-0TeV"]
-fit_component     = ["xr0","xr0-2G","xr","xr-2G","xr-G1","xr-sh","xr-dc"]
+source            = ["MSH15-52---0.3_0.6TeV", "MSH15-52---0.6_1.2TeV","MSH15-52---1.2-2.4TeV","MSH15-52---gt2.4TeV", "MSH15-52---std"]
+tags              = ["0-3_0-6TeV", "0-6_1-2TeV", "1-2_2-4TeV", "gt2-4TeV", "std"]
+#fit_component     = ["xr0-ScP","xr0-Sc", "xr-ScP", "xr-Sc"]
+fit_component     = ["xr0","xr0-2G","xr","xr-2G","xr-G1","xr-sh","xr-dc","xr0-ScP","xr0-Sc", "xr-ScP", "xr-Sc"]
 #fit_component     = ["xr_psf","xr_psf","xr-2G_psf","xr-G1_psf","xr-sh_psf","xr-dc_psf"]
 #fit_component     = ["xr-2G_bkg_d"]
 
+alpha_factor_pa   = [0.0, 0.0, 1.3, 1.3, 1.3, 1.3, 1.3, 0.0, 0.0, 1.3, 1.3] # when alpha is frozen to ~ the best fit value for the Std cut model + 2G
+#alpha_factor_pa   = [0.0, 0.0, 1.3, 1.3] # For the Sersic profile investigation
 
 
-directory         = ["energy-dependent/2d0/"] * nb_pa_analyses
+directory         = ["energy-dependent/MultiEnergyBins/h_res/new/"] * nb_pa_analyses
 
 path_data         = "/home/tsirou/Documents/Analyses/DATA/"
 path_g            = ["/home/tsirou/Documents/Analyses/MSH_15-52/"] * (nb_pa_analyses)
@@ -121,24 +110,24 @@ path_x            = "/home/tsirou/Documents/Analyses/Xray_MSH_15-52/"
 
 
 path_psf          = [p + "psf/" for p in path]
-path_template     = [p + "template/" for p in path]
+path_template     = [p + "templates/" for p in path]
 path_expo         = [p + "exposure/" for p in path]
 path_runs         = [p + "runs/" for p in path]
 
 save_path         = [p + "Fit/" for p in path]
 save_path_gif     = [s + 'GIF/' for s in save_path]
 # Path for all the results txt files (global)
-results_path      = "/home/tsirou/Documents/Analyses/Results/Energy-dependent/2d0/"
+results_path      = "/home/tsirou/Documents/Analyses/Results/Energy-dependent/MultiEnergyBins/2d0_HiRes_new/"
 
-filename_runs     = ["Results_MSH_15_52_std_2d0_ModelPlus_Std_mergedrun_list.txt", "Results_MSH_15_52_300_600GeV_2d0_Custom_mergedrun_list.txt", "Results_MSH_15_52_600_900GeV_2d0_Custom_mergedrun_list.txt", "Results_MSH_15_52_0_9_3_0TeV_2d0_Custom_mergedrun_list.txt", "Results_MSH_15_52_gt3_0TeV_2d0_Custom_mergedrun_list.txt"]
+filename_runs     = ["Results_MSH_15_52_0_3_0_6_TeV_HiRes_Custom_mergedrun_list.txt", "Results_MSH_15_52_0_6_1_2_TeV_HiRes_Custom_mergedrun_list.txt", "Results_MSH_15_52_1_2_2_4_TeV_HiRes_Custom_mergedrun_list.txt", "Results_MSH_15_52_gt2_4_TeV_HiRes_Custom_mergedrun_list.txt", "Results_MSH_15_52_ModelPlus_HiRes_mergedrun_list.txt"]
 
-filename_bkg      = ["Results_MSH_15_52_std_2d0_ModelPlus_Std_mergedbackground.fits", "Results_MSH_15_52_300_600GeV_2d0_Custom_mergedbackground.fits", "Results_MSH_15_52_600_900GeV_2d0_Custom_mergedbackground.fits", "Results_MSH_15_52_0_9_3_0TeV_2d0_Custom_mergedbackground.fits", "Results_MSH_15_52_gt3_0TeV_2d0_Custom_mergedbackground.fits"]
-filename_gamma    = ["Results_MSH_15_52_std_2d0_ModelPlus_Std_mergedgamma-like.fits", "Results_MSH_15_52_300_600GeV_2d0_Custom_mergedgamma-like.fits", "Results_MSH_15_52_600_900GeV_2d0_Custom_mergedgamma-like.fits", "Results_MSH_15_52_0_9_3_0TeV_2d0_Custom_mergedgamma-like.fits", "Results_MSH_15_52_gt3_0TeV_2d0_Custom_mergedgamma-like.fits"]
-filename_excess   = ["Results_MSH_15_52_std_2d0_ModelPlus_Std_mergedexcess.fits", "Results_MSH_15_52_300_600GeV_2d0_Custom_mergedexcess.fits", "Results_MSH_15_52_600_900GeV_2d0_Custom_mergedexcess.fits", "Results_MSH_15_52_0_9_3_0TeV_2d0_Custom_mergedexcess.fits", "Results_MSH_15_52_gt3_0TeV_2d0_Custom_mergedexcess.fits"]
+filename_bkg      = ["Results_MSH_15_52_0_3_0_6_TeV_HiRes_Custom_mergedbackground.fits", "Results_MSH_15_52_0_6_1_2_TeV_HiRes_Custom_mergedbackground.fits", "Results_MSH_15_52_0_6_1_2_TeV_HiRes_Custom_mergedbackground.fits", "Results_MSH_15_52_gt2_4_TeV_HiRes_Custom_mergedbackground.fits", "Results_MSH_15_52_ModelPlus_HiRes_mergedbackground.fits"]
+filename_gamma    = ["Results_MSH_15_52_0_3_0_6_TeV_HiRes_Custom_mergedgamma-like.fits", "Results_MSH_15_52_0_6_1_2_TeV_HiRes_Custom_mergedgamma-like.fits", "Results_MSH_15_52_1_2_2_4_TeV_HiRes_Custom_mergedgamma-like.fits", "Results_MSH_15_52_gt2_4_TeV_HiRes_Custom_mergedgamma-like.fits", "Results_MSH_15_52_ModelPlus_HiRes_mergedgamma-like.fits"]
+filename_excess   = ["Results_MSH_15_52_0_3_0_6_TeV_HiRes_Custom_mergedexcess.fits", "Results_MSH_15_52_0_6_1_2_TeV_HiRes_Custom_mergedexcess.fits", "Results_MSH_15_52_1_2_2_4_TeV_HiRes_Custom_mergedexcess.fits", "Results_MSH_15_52_gt2_4_TeV_HiRes_Custom_mergedexcess.fits", "Results_MSH_15_52_ModelPlus_HiRes_mergedtexcess.fits"]
 
-filename_psf      = ["psf_std.fits", "psf_300_600GeV.fits", "psf_600_900GeV.fits", "psf_0_9_3TeV.fits", "psf_gt3TeV.fits"]
+filename_psf      = ["psf_MSH_15_52_0_3_0_6_TeV.fits", "psf_MSH_15_52_0_6_1_2_TeV.fits", "psf_MSH_15_52_1_2_2_4_TeV.fits", "psf_MSH_15_52_gt2_4_TeV.fits", "psf_std_HiRes.fits"]
 
-# This exposure maps where first generated by the gammapy script then pixel-corrected by Yves
+# This exposure maps were first generated by the gammapy script then pixel-corrected by Yves
 filename_expo     = [""] * (nb_pa_analyses)
 for a in range(0,nb_pa_analyses):
     filename_expo[a]     = 'exposure_map_' + tags[a] + '_PApix' + '.fits.gz'
@@ -153,8 +142,8 @@ filename_slice    = ""
 
 # Fit initial parameters
 
-exposure_amplitude     = [1.0e-12, 1.0e-9, 1.0e-10, 1.0e-11,1.0e-12]
-G_comp_ampl            = [10., 1., 1., 1., 0.5]
+exposure_amplitude     = [1.0e-9, 1.0e-10, 1.0e-11, 1.0e-12, 1.0e-12]
+G_comp_ampl            = [0.1, 0.1, 0.1, 0.1, 1.0]
 fwhm_init              = 8.
 
 # Analysis pointing coordinates
@@ -167,8 +156,8 @@ ra_psr   = 228.4818
 dec_psr  = -59.1358
 glon_psr = 320.3208
 glat_psr = -1.1619
-
-
+X_psr    = 201.921740646
+Y_psr    = 201.670122119
 
 #MultiEnergyBin
 path_multiEbins         = "/home/tsirou/Documents/Analyses/MSH_15-52/energy-dependent/MultiEnergyBins/"
@@ -178,5 +167,8 @@ filename_Ssteps         = "small_steps/data/energy_excess_s.dat"
 filename_Psteps         = "previous/energy_excess_p.dat"
 filename_Nsteps         = "new/data/energy_excess_n.dat"
 filename_Hsteps         = "h_res/data/energy_excess_h.dat"
+filename_NHsteps        = "h_res/data/energy_excess_nh.dat"
+filename_Hnsteps        = "h_res/data/energy_excess_hnew.dat"
+
 
 path_multiEbins_results = path_multiEbins + "plots/"

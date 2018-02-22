@@ -11,10 +11,8 @@ from conversion import norm_fits
 def pulsar_mag(psr_factor):
 
     # Coordinates of the pulsar
-    ra_psr       = 228.4818
-    dec_psr      = -59.1358
-    glon_psr     = 320.3208
-    glat_psr     =  -1.1619
+    ra_psr       = names.ra_psr
+    dec_psr      = names.dec_psr
 
 
     hdu_x        = fits.open(names.path_x + 'rebinned_' + names.dim_for_a + '.fits')

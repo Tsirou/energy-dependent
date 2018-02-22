@@ -33,7 +33,7 @@ output_gif_path  = names.path[0]
 # for f in range (0,len(names.filename_gamma)):
 #     fits_files.append(names.filename_gamma[f])
 
-for f in range (0,len(names.filename_excess)):
+for f in range (0,len(names.filename_excess) - 1):
     fits_files.append(names.filename_excess[f])
 
 

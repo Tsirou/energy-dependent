@@ -519,7 +519,7 @@ def fits_png(save_path, output_gif_path, fits_files, cash, psr_alpha, tname, zoo
     plt.colorbar(image, label="Counts ($\sqrt{\;}$ scale)")
 
     # Convert the parameters for the added component
-    if (tname.find("G") != -1):
+    if (tname.find("G") != -1 or tname.find("Sc") != -1):
         gaus = []
         gaus.append(g1[0])
         gaus.append(g1[1])
@@ -597,14 +597,18 @@ def fits_png(save_path, output_gif_path, fits_files, cash, psr_alpha, tname, zoo
             ax.add_patch(circle)
             ax.plot(gaus[0], gaus[1], 'x', color='k', ms=10)
 
-    if (tname.find("dc") == -1 and tname.find("sh") == -1 and tname.find("G") == -1):
+    if (tname.find("dc") == -1 and tname.find("sh") == -1 and tname.find("G") == -1 and tname.find("Sc") == -1):
         gaus = np.zeros(6)
         gaus[5] = (g1[0])
 
     ax.annotate(r"$\alpha$       : " + str(psr_alpha), (zoom_1 + 5, zoom_1 + 5), fontsize=20, color='w')
+    if (tname.find("Sc") != -1 ):
+        ax.annotate("Sersic n = " + str(g1[7]), (zoom_1 + 5, zoom_2 - 5), fontsize=20, color='w')
 
     if(cb_reverse.find('y') != -1):
         ax.annotate(r"$\alpha$       : " + str(psr_alpha), (zoom_1 + 5, zoom_1 + 5), fontsize=20, color='k')
+        if (tname.find("Sc") != -1 ):
+            ax.annotate("Sersic n = " + str(g1[7]), (zoom_1 + 5, zoom_2 - 5), fontsize=20, color='k')
 
 
 
