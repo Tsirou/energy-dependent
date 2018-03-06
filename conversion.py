@@ -7,6 +7,8 @@ import matplotlib as mpl
 
 from astropy import wcs
 from astropy.io import fits
+from scipy import interpolate
+
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 
@@ -382,12 +384,33 @@ def Sersic_profile(n, r_0, epsilon, theta, x_o, y_o, A):
 # Radial profile estimation [Found on the web]
 def radial_profile(data, center):
     x, y = np.indices((data.shape))
+
     r    = np.sqrt((x - center[0])**2 + (y - center[1])**2)
     r    = r.astype(np.int)
 
     tbin = np.bincount(r.ravel(), data.ravel())
     nr   = np.bincount(r.ravel())
     rp   = tbin / nr
+    return rp
+
+# Profile from the peak position
+def peak_profile(data, center):
+    x, y     = np.indices((data.shape))
+
+    interp   = interpolate.interp2d(x, y, data)
+
+    ind_max  = np.unravel_index(np.argmax(data, axis=None), data.shape)
+    # ind_min  = np.unravel_index(np.argmin(data, axis=None), data.shape)
+
+
+    r        = affine(x, ind_max[0], ind_max[1], center[0], center[1]  )
+
+    r        = r.astype(np.int)
+
+    tbin     = np.bincount(r.ravel(), data.ravel())
+    nr       = np.bincount(r.ravel())
+    rp       = tbin / nr
+
     return rp
 
 # GDL/IDL procedure to correct the gammapy generated maps with the PA pixel projection

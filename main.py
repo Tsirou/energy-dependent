@@ -58,7 +58,7 @@ if(names.psf_fudge != -1):
     fit_fudged_psf(dim_im)
 
 component_list_index_start   = 0 # 7 # 0 # 4 #
-component_list_index_end     = 4 # len(names.fit_component) # 4 # 7
+component_list_index_end     = 3 # len(names.fit_component) # 4 # 7
 
 for t in range(component_list_index_start, component_list_index_end):
 
@@ -227,10 +227,10 @@ for t in range(component_list_index_start, component_list_index_end):
     quick_results('yes',gauss,name_file,component,psr_factor,cash_stats[-1],-1)
     quick_errors('yes',tname, gauss,component, t)
 
-    fits_png(names.save_path[analysis],names.results_path,name_file,cash_stats[-1],psr_factor, tname + '_PA','all_n', component,'n')
-    fits_png(names.save_path[analysis], names.results_path, name_file, cash_stats[-1], psr_factor,tname + '_PA', 'all_n', component, 'y')
-    fits_png(names.save_path[analysis], names.results_path, name_file, cash_stats[-1], psr_factor, tname + '_PA', 'all_y', component, 'n')
-    fits_png(names.save_path[analysis], names.results_path, name_file, cash_stats[-1], psr_factor, tname + '_PA', 'all_y', component, 'y')
+    # fits_png(names.save_path[analysis],names.results_path,name_file,cash_stats[-1],psr_factor, tname + '_PA','all_n', component,'n')
+    # fits_png(names.save_path[analysis], names.results_path, name_file, cash_stats[-1], psr_factor,tname + '_PA', 'all_n', component, 'y')
+    # fits_png(names.save_path[analysis], names.results_path, name_file, cash_stats[-1], psr_factor, tname + '_PA', 'all_y', component, 'n')
+    # fits_png(names.save_path[analysis], names.results_path, name_file, cash_stats[-1], psr_factor, tname + '_PA', 'all_y', component, 'y')
 
 
 ################################################################################################################

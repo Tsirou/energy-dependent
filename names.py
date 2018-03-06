@@ -153,7 +153,7 @@ for a in range(0,nb_pa_analyses):
 filename_thresh   = ["MSH1552_Chandra_v0_4-7keV_thresh_exp8_100x100.fits.gz"] * (nb_pa_analyses)
 filename_x        = (["MSH1552_Chandra_vsmo_4-7keV.fits"] * nb_pa_analyses)
 
-filename_slice    = "slices_perp.txt"
+filename_slice    = "slices_several.txt" #"slices_perp.txt"
 
 
 # Fit initial parameters
@@ -179,7 +179,7 @@ Y_psr    = 201.670122119
 #Slices to be fit only in a xr conf
 x_slice,y_slice,L_slice,l_slice,dev_slice     =  np.loadtxt(save_path_sliced[analysis] + filename_slice,dtype=float,usecols=(0,1,2,3,4),unpack=True,skiprows=1)
 
-nb_of_slice   = 0
+nb_of_slice   = 1
 
 boxes         = [x_slice[nb_of_slice],y_slice[nb_of_slice],L_slice[nb_of_slice],l_slice[nb_of_slice],dev_slice[nb_of_slice]]
 

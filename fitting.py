@@ -960,13 +960,6 @@ def fit_msh1552_xfact_comp(dim,bkg_option,psf_gauss,psr_alpha,xampl):
     sherpa.set_method(names.method)
     # Convoluted PSF model
 
-
-    if(names.circular_selection.find('y') != -1):
-        # Selecting a region for the fit procedure
-        sherpa.notice2d("circle("+str(dim/2 + 0.5)+","+str(dim/2 + 0.5)+","+str(dim/4)+")")
-    if(names.sliced_selection.find('y') != -1):
-        sherpa.notice2d("box(" + str(names.boxes[0]) + "," + str(names.boxes[1]) + "," + str(names.boxes[2]) + "," + str(names.boxes[3]) + "," + str(names.boxes[4]) + ")")
-
     # Using the parameter for the background and adding a gaussian fit for the source
 
     psf       = "y"
@@ -1045,6 +1038,12 @@ def fit_msh1552_xfact_comp(dim,bkg_option,psf_gauss,psr_alpha,xampl):
                 sherpa.set_full_model(bkg_mod + hPSF2( (xrays_mod + sherpa.sersic2d.gcomp)) * exposure)
 
 
+
+    if(names.circular_selection.find('y') != -1):
+        # Selecting a region for the fit procedure
+        sherpa.notice2d("circle("+str(dim/2 + 0.5)+","+str(dim/2 + 0.5)+","+str(dim/4)+")")
+    if(names.sliced_selection.find('y') != -1):
+        sherpa.notice2d("box(" + str(names.boxes[0]) + "," + str(names.boxes[1]) + "," + str(names.boxes[2]) + "," + str(names.boxes[3]) + "," + str(names.boxes[4]) + ")")
 
                 
     if(bkg_option.find("gam") != -1):
