@@ -1,6 +1,7 @@
 import sys
-
 import names
+import imutils, cv2
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -381,6 +382,13 @@ def Sersic_profile(n, r_0, epsilon, theta, x_o, y_o, A):
 
 #==============================================================================
 
+def X_Y_rotation(x, y, angle):
+
+    x_rot   = (x * np.cos(angle * np.pi / 180.)) + (y * np.sin(angle * np.pi / 180.))
+    y_rot   = (y * np.cos(angle * np.pi / 180.)) - (x * np.sin(angle * np.pi / 180.))
+
+    return x_rot, y_rot
+
 # Radial profile estimation [Found on the web]
 def radial_profile(data, center):
     x, y = np.indices((data.shape))
@@ -394,16 +402,30 @@ def radial_profile(data, center):
     return rp
 
 # Profile from the peak position
-def peak_profile(data, center):
+def peak_profile(data, center, angle):
     x, y     = np.indices((data.shape))
 
-    interp   = interpolate.interp2d(x, y, data)
+    new_data   = imutils.rotate(data, angle)
 
-    ind_max  = np.unravel_index(np.argmax(data, axis=None), data.shape)
-    # ind_min  = np.unravel_index(np.argmin(data, axis=None), data.shape)
+    ind_max  = np.unravel_index(np.argmax(new_data, axis=None), new_data.shape)
+
+    #center   = imutils.rotate(center, angle)
+
+    ind_rand = [ind_max[0], center[1]]
+
+    plt.imshow(new_data, cmap="hot")
+    #plt.imshow(data, cmap="hot")
 
 
-    r        = affine(x, ind_max[0], ind_max[1], center[0], center[1]  )
+    plt.plot(center[0], center[1], "m+")
+    plt.plot(ind_max[0], ind_max[1], "w+")
+
+    plt.show()
+
+
+    plt.show()
+
+    r        = affine(x, ind_max[0], ind_max[1], ind_rand[0], ind_rand[1]  )
 
     r        = r.astype(np.int)
 

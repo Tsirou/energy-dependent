@@ -64,35 +64,36 @@ def profile(save_path, fits_files, output_gif_path):
     hdu_gam.close()
     plt.clf()
 
-    reset_display()
-
-    plt.style.use('dark_background')
-
-    fig = plt.figure()
-
-    fig.set_size_inches(10.5,8.5)
-
-    ax = fig.add_subplot(111)
-    ax.patch.set_facecolor('black')
-    ax.spines['top'].set_color('w')
-    ax.spines['bottom'].set_color('w')
-    ax.spines['left'].set_color('w')
-    ax.spines['right'].set_color('w')
-
-    ax.xaxis.label.set_color('w')
-
-    ax.set_title('MSH 15-5$\mathit{2}$ energy-dependent profiles', fontsize=13, color='w')
-
-    ax.set_xlabel('Distance to PSR B1509-58')
-    ax.set_ylabel('Excess')
-
-    plt.axhline(y = 0., color='w', linestyle = "-")
-
     colors = ["cornflowerblue", "springgreen", "orange", "indianred", "yellow"]
 
-    list_slice   = []
 
     for sl in range(0, len(names.x_slice)):
+
+        reset_display()
+
+        plt.style.use('dark_background')
+
+        fig = plt.figure()
+
+        fig.set_size_inches(10.5,8.5)
+
+        ax = fig.add_subplot(111)
+        ax.patch.set_facecolor('black')
+        ax.spines['top'].set_color('w')
+        ax.spines['bottom'].set_color('w')
+        ax.spines['left'].set_color('w')
+        ax.spines['right'].set_color('w')
+
+        ax.xaxis.label.set_color('w')
+
+        ax.set_title('MSH 15-5$\mathit{2}$ energy-dependent profiles', fontsize=13, color='w')
+
+        ax.set_xlabel('Distance to PSR B1509-58')
+        ax.set_ylabel('Excess')
+
+        plt.axhline(y = 0., color='w', linestyle = "-")
+
+
         source    = []
 
         for fl in range(0,len(fits_files)):
@@ -121,8 +122,9 @@ def profile(save_path, fits_files, output_gif_path):
 
             img = ndimage.gaussian_filter(source, sigma=0, order=0)
 
+
             #cut  = radial_profile(source, [x_psr,y_psr])
-            cut   = peak_profile(source, [boxes[2], boxes[3]/2.])
+            cut   = peak_profile(source, [boxes[0], boxes[1]], boxes[4])
 
 
             x_plane  = np.arange(401)

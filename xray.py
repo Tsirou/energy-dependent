@@ -64,4 +64,5 @@ def xray_header():
 
     hdu_xray.close()
 
-    return 
+    return
+
