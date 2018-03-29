@@ -1020,7 +1020,7 @@ def fit_msh1552_xfact_comp(dim,bkg_option,psf_gauss,psr_alpha,xampl):
     if(psf.find("y") != -1):
         if(psf_gauss.find("G1") == -1 and psf_gauss.find("2G") == -1 and psf_gauss.find("sh") == -1 and psf_gauss.find("dc") == -1):
             if(bkg_option.find("gam") != -1):
-                sherpa.set_full_model(bkg_mod + hPSF2(xrays_mod * exposure))
+                sherpa.set_full_model(bkg_mod + hPSF2(xrays_mod) * exposure)
         if(psf_gauss.find("G1") != -1 or psf_gauss.find("2G") != -1):
             if(bkg_option.find("gam") != -1):
                 sherpa.set_full_model(bkg_mod + hPSF2((xrays_mod + sherpa.gauss2d.gcomp)) * exposure)

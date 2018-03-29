@@ -109,26 +109,27 @@ def make_views(ax,angles,elevation=None, width=20, height = 20,
     return files
 
 # MP4 file generation [From the web]
-def make_movie(files,output, fps=10,bitrate=1800,**kwargs):
+def make_movie(files, output, fps=10, bitrate=1800, **kwargs):
     """
     Uses mencoder, produces a .mp4/.ogv/... movie from a list of
     picture files.
     """
      
     output_name, output_ext = os.path.splitext(output)
-    command = { '.mp4' : 'mencoder "mf://%s" -mf fps=%d -o %s.mp4 -ovc lavc\
+    command         = { '.mp4' : 'mencoder "mf://%s" -mf fps=%d -o %s.mp4 -ovc lavc\
                          -lavcopts vcodec=msmpeg4v2:vbitrate=%d'
-                         %(",".join(files),fps,output_name,bitrate)}
+                         %(",".join(files), fps, output_name, bitrate) }
                           
     command['.ogv'] = command['.mp4'] + '; ffmpeg -i %s.mp4 -r %d %s'%(output_name,fps,output)
      
     print command[output_ext]
-    output_ext = os.path.splitext(output)[1]
+
+    output_ext      = os.path.splitext(output)[1]
     os.system(command[output_ext])
  
 
 # GIF file generation [From the web]
-def make_gif(files,output,delay=100, repeat=True,**kwargs):
+def make_gif(files, output, delay=100, repeat=True, **kwargs):
     """
     Uses imageMagick to produce an animated .gif from a list of
     picture files.
@@ -136,8 +137,10 @@ def make_gif(files,output,delay=100, repeat=True,**kwargs):
      
     loop = -1 if repeat else 0
     os.system('convert -delay %d -loop %d %s %s'
-              %(delay,loop," ".join(files),output))
- 
+        %(delay, loop, " ".join(files), output) )
+
+    return
+
 # JPEG strip generation [From the web]
 def make_strip(files,output,**kwargs):
     """

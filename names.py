@@ -11,6 +11,14 @@ save_option       = ""
 fit_option        = ""
 bkg_option        = ""
 
+#==============================================================================
+# Input arguments :
+# 0              : python [command]
+# 1              : analysis [names]
+# 2              : component_list_index_start [main]
+# 3              : component_list_index_end [main]
+# 4              ; nb_of_slice [names]
+#==============================================================================
 
 #==============================================================================
 # Various variables
@@ -18,12 +26,12 @@ bkg_option        = ""
 
 
 random_convert_shift =  0  # 1 or 0 --- Depends on the matrix conventions
-display_ds9          = 'y' # yes (y) or no (n) for displaying with ds9 the fit steps
+display_ds9          = 'n' # yes (y) or no (n) for displaying with ds9 the fit steps
 circular_selection   = 'n' # yes (y) or no (n) for selecting a circular region for fitting
-sliced_selection     = 'n' # yes (y) or no (n) for selecting a circular region for fitting
+sliced_selection     = sys.argv[4] # yes (y) or no (n) for selecting a circular region for fitting
 bkg_thaw             = 'n' # yes (y) or no (n) for thawing the background amplitude
 bkg_amplitude        = 1.0 # usually set to 1.0 but could also be +/- 2%
-confidence_levels    = 'y' # yes (y) or no (n) for computing the confidence intervals (time-consuming!)
+confidence_levels    = 'n' # yes (y) or no (n) for computing the confidence intervals (time-consuming!)
 
 
 r_psf_0           = 0
@@ -86,7 +94,6 @@ cb_extrema[5,:]         = [1.0, 1.8]
 cb_extrema[6,:]         = [1.0, 1.6]
 cb_extrema[7,:]         = [1.0, 1.6]
 cb_extrema[8,:]         = [1.0, 1.2]
-cb_extrema[9,:]         = [1.0, 4.0]
 
 
 cb_resids               = np.ndarray((nb_pa_analyses, 2))
@@ -99,7 +106,6 @@ cb_resids[5,:]          = [-3.0, 3.0]
 cb_resids[6,:]          = [-3.0, 3.0]
 cb_resids[7,:]          = [-3.0, 3.0]
 cb_resids[8,:]          = [-3.0, 3.0]
-cb_resids[9,:]          = [-4.0, 4.0]
 
 
 #For the exposure_gamma.py script
@@ -123,14 +129,20 @@ alpha_factor_pa   = [0.0, 0.0, 1.3, 1.3, 1.3, 1.3, 1.3, 0.0, 0.0, 1.3, 1.3] # wh
 
 
 directory         = ["energy-dependent/MultiEnergyBins/EHE/"] * nb_pa_analyses
+#directory         = ["EHE/"] * nb_pa_analyses
 
 path_data         = "/home/tsirou/Documents/Analyses/DATA/"
+#path_data         = ""
 path_g            = ["/home/tsirou/Documents/Analyses/MSH_15-52/"] * (nb_pa_analyses)
+#path_g            = ["/home/tsirou/ema/PWN/"] * (nb_pa_analyses)
+
 path              = [""] * (nb_pa_analyses)
 for n in range(0,nb_pa_analyses):
     path[n]   = path_g[n] + directory[n]
 
 path_x            = "/home/tsirou/Documents/Analyses/Xray_MSH_15-52/"
+#path_x            = "/home/tsirou/ema/PWN/Xray_MSH_15-52/"
+
 
 path_psf          = [p + "psf/" for p in path]
 path_template     = [p + "templates/" for p in path]
@@ -148,6 +160,9 @@ if (sliced_selection.find('y') != -1):
 
 # Path for all the results txt files (global)
 results_path      = "/home/tsirou/Documents/Analyses/Results/Energy-dependent/MultiEnergyBins/2d0_EHE/"
+#results_path      = "/home/tsirou/ema/PWN/EHE/Results/"
+
+
 if (sliced_selection.find('y') != -1):
     results_path   = results_path + "sliced/"
 
@@ -203,13 +218,13 @@ X_psr    = 201.921740646
 Y_psr    = 201.670122119
 
 
-#Slices to be fit only in a xr conf
+#Slices to be fit only in an xr conf
 if (sliced_selection.find('y') != -1):
     x_slice,y_slice,L_slice,l_slice,dev_slice     =  np.loadtxt(save_path_sliced[analysis] + filename_slice,dtype=float,usecols=(0,1,2,3,4),unpack=True,skiprows=1)
 
-    nb_of_slice   = 1
+    nb_of_slice   = int(sys.argv[5])
 
-    boxes         = [x_slice[nb_of_slice],y_slice[nb_of_slice],L_slice[nb_of_slice],l_slice[nb_of_slice],dev_slice[nb_of_slice]]
+    boxes         = [x_slice[nb_of_slice], y_slice[nb_of_slice], L_slice[nb_of_slice], l_slice[nb_of_slice], dev_slice[nb_of_slice]]
 
 
 
