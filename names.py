@@ -56,18 +56,14 @@ factor_pix2deg    = 0.
 ###############################################
 analysis          = int(sys.argv[1])
 # Tag for the different analyses :
-#     0    : PA 2.0deg HiRes 4.0 - 30 TeV
-#     1    : PA 2.0deg HiRes 4.0 - 10 TeV
-#     2    : PA 2.0deg HiRes 10 - 20 TeV
-#     3    : PA 2.0deg Std 4.0 - 30 TeV
-#     4    : PA 2.0deg Std 4.0 - 10 TeV
-#     5    : PA 2.0deg Std 10 - 20 TeV
-#     6    : PA 2.0deg Std 2.4 - 4.8 TeV
-#     7    : PA 2.0deg Std 4.8 - 9.6 TeV
-#     8    : PA 2.0deg Std gt 9.6 TeV
+#     0    : PA 2.0deg 0.3 - 0.6 TeV
+#     1    : PA 2.0deg 0.6 - 1.2 TeV
+#     2    : PA 2.0deg 1.2 - 2.4 TeV
+#     3    : PA 2.0deg > 2.4 TeV
+#     4    : PA 2.0deg Std
 ###############################################
 
-nb_pa_analyses    = 9
+nb_pa_analyses    = 5
 
 pulsar_then_rebin = 'n' # Check in case one should multiply the x-ray templates before rebinning them --Not fully implemented || Also used for the
 gif_norm          = 'n' # For the normalisation of the colorbar in the gifs generation
@@ -90,10 +86,6 @@ cb_extrema[1,:]         = [1.0, 1.6]
 cb_extrema[2,:]         = [1.0, 1.6]
 cb_extrema[3,:]         = [1.0, 1.2]
 cb_extrema[4,:]         = [1.0, 4.0]
-cb_extrema[5,:]         = [1.0, 1.8]
-cb_extrema[6,:]         = [1.0, 1.6]
-cb_extrema[7,:]         = [1.0, 1.6]
-cb_extrema[8,:]         = [1.0, 1.2]
 
 
 cb_resids               = np.ndarray((nb_pa_analyses, 2))
@@ -102,47 +94,36 @@ cb_resids[1,:]          = [-3.0, 3.0]
 cb_resids[2,:]          = [-3.0, 3.0]
 cb_resids[3,:]          = [-3.0, 3.0]
 cb_resids[4,:]          = [-4.0, 4.0]
-cb_resids[5,:]          = [-3.0, 3.0]
-cb_resids[6,:]          = [-3.0, 3.0]
-cb_resids[7,:]          = [-3.0, 3.0]
-cb_resids[8,:]          = [-3.0, 3.0]
 
 
 #For the exposure_gamma.py script
-analysis_energy_low        = [4.0, 4.0, 10.0, 4.0, 4.0, 10.0, 2.4, 4.8, 9.6]
-analysis_energy_high       = [30.0, 10.0, 20.0, 30.0, 10.0, 20.0, 4.8, 9.6, 100.]
+analysis_energy_low        = [0.3, 0.6, 1.2, 2.4, 0.3]
+analysis_energy_high       = [0.6, 1.2, 2.4, 100., 100.]
 
 
-source            = ["MSH15-52---HiRes-4.0_30TeV", "MSH15-52---HiRes-4.0_10TeV", "MSH15-52---HiRes-10_20TeV", \
-                     "MSH15-52---4.0_30TeV", "MSH15-52---4.0_10TeV", "MSH15-52---10_20TeV", \
-                     "MSH15-52---2.4_4.8TeV", "MSH15-52---4.8_9.6TeV", "MSH15-52---gt9.6TeV"]
-tags              = ["HiRes_4-0_30-0TeV", "HiRes_4-0_10-0TeV", "HiRes_10-0_20-0TeV", \
-                     "4-0_30-0TeV", "4-0_10-0TeV", "10-0_20-0TeV", \
-                     "2-4_4-8TeV", "4-8_9-6TeV", "gt9-6TeV"]
+source            = ["MSH15-52---0.3_0.6TeV", "MSH15-52---0.6_1.2TeV","MSH15-52---1.2-2.4TeV", "MSH15-52---gt2.4TeV", "MSH15-52---std"]
+tags              = ["0-3_0-6TeV", "0-6_1-2TeV", "1-2_2-4TeV", "gt2-4TeV", "std"]
+#fit_component     = ["xr0-ScP","xr0-Sc", "xr-ScP", "xr-Sc"]
 fit_component     = ["xr0","xr0-2G","xr","xr-2G","xr-G1","xr-sh","xr-dc","xr0-ScP","xr0-Sc", "xr-ScP", "xr-Sc"]
+#fit_component     = ["xr_psf","xr_psf","xr-2G_psf","xr-G1_psf","xr-sh_psf","xr-dc_psf"]
+#fit_component     = ["xr-2G_bkg_d"]
 
 
 
 alpha_factor_pa   = [0.0, 0.0, 1.3, 1.3, 1.3, 1.3, 1.3, 0.0, 0.0, 1.3, 1.3] # when alpha is frozen to ~ the best fit value for the Std cut model + 2G
-#also for the Sersic profile investigation
+#alpha_factor_pa   = [0.0, 0.0, 1.3, 1.3] # for the Sersic profile investigation
 
 
 
-directory         = ["energy-dependent/MultiEnergyBins/EHE/"] * nb_pa_analyses
-#directory         = ["EHE/"] * nb_pa_analyses
+directory         = ["energy-dependent/MultiEnergyBins/new/Ebins/"] * nb_pa_analyses
 
 path_data         = "/home/tsirou/Documents/Analyses/DATA/"
-#path_data         = ""
 path_g            = ["/home/tsirou/Documents/Analyses/MSH_15-52/"] * (nb_pa_analyses)
-#path_g            = ["/home/tsirou/ema/PWN/"] * (nb_pa_analyses)
-
 path              = [""] * (nb_pa_analyses)
 for n in range(0,nb_pa_analyses):
     path[n]   = path_g[n] + directory[n]
 
 path_x            = "/home/tsirou/Documents/Analyses/Xray_MSH_15-52/"
-#path_x            = "/home/tsirou/ema/PWN/Xray_MSH_15-52/"
-
 
 path_psf          = [p + "psf/" for p in path]
 path_template     = [p + "templates/" for p in path]
@@ -159,31 +140,18 @@ if (sliced_selection.find('y') != -1):
 
 
 # Path for all the results txt files (global)
-results_path      = "/home/tsirou/Documents/Analyses/Results/Energy-dependent/MultiEnergyBins/2d0_EHE/"
-#results_path      = "/home/tsirou/ema/PWN/EHE/Results/"
-
-
+results_path      = "/home/tsirou/Documents/Analyses/Results/Energy-dependent/MultiEnergyBins/2d0_new/"
 if (sliced_selection.find('y') != -1):
     results_path   = results_path + "sliced/"
 
 
-filename_runs     = ["Results_MSH_15_52_4_30_TeV_HiRes_Custom_mergedrun_list.txt", "Results_MSH_15_52_4_10_TeV_HiRes_Custom_mergedrun_list.txt", "Results_MSH_15_52_10_20_TeV_HiRes_Custom_mergedrun_list.txt", \
-                    "Results_MSH_15_52_4_30_TeV_Custom_mergedrun_list.txt", "Results_MSH_15_52_4_10_TeV_Custom_mergedrun_list.txt", "Results_MSH_15_52_10_20_TeV_Custom_mergedrun_list.txt", \
-                    "Results_MSH_15_52_2_4_4_8_TeV_Custom_mergedrun_list.txt", "Results_MSH_15_52_4_8_9_6_TeV_Custom_mergedrun_list.txt", "Results_MSH_15_52_gt9_6_TeV_Custom_mergedrun_list.txt"]
+filename_runs     = ["Results_MSH_15_52_0_3_0_6_TeV_Custom_mergedrun_list.txt", "Results_MSH_15_52_0_6_1_2_TeV_Custom_mergedrun_list.txt", "Results_MSH_15_52_1_2_2_4_TeV_Custom_mergedrun_list.txt", "Results_MSH_15_52_gt2_4_TeV_Custom_mergedrun_list.txt", "Results_MSH_15_52_std_2d0_ModelPlus_Std_mergedrun_list.txt"]
 
-filename_bkg      = ["Results_MSH_15_52_4_30_TeV_HiRes_Custom_mergedbackground.fits", "Results_MSH_15_52_4_10_TeV_HiRes_Custom_mergedbackground.fits", "Results_MSH_15_52_10_20_TeV_HiRes_Custom_mergedbackground.fits", \
-                     "Results_MSH_15_52_4_30_TeV_Custom_mergedbackground.fits", "Results_MSH_15_52_4_10_TeV_Custom_mergedbackground.fits", "Results_MSH_15_52_10_20_TeV_HiRes_Custom_mergedbackground.fits", \
-                     "Results_MSH_15_52_2_4_4_8_TeV_Custom_mergedbackground.fits", "Results_MSH_15_52_4_8_9_6_TeV_Custom_mergedbackground.fits", "Results_MSH_15_52_gt9_6_TeV_Custom_mergedbackground.fits"]
+filename_bkg      = ["Results_MSH_15_52_0_3_0_6_TeV_Custom_mergedbackground.fits", "Results_MSH_15_52_0_6_1_2_TeV_Custom_mergedbackground.fits", "Results_MSH_15_52_1_2_2_4_TeV_Custom_mergedbackground.fits", "Results_MSH_15_52_1_2_2_4_TeV_Custom_mergedbackground.fits", "Results_MSH_15_52_std_2d0_ModelPlus_Std_mergedbackground.fits"]
+filename_gamma    = ["Results_MSH_15_52_0_3_0_6_TeV_Custom_mergedgamma-like.fits", "Results_MSH_15_52_0_6_1_2_TeV_Custom_mergedgamma-like.fits", "Results_MSH_15_52_1_2_2_4_TeV_Custom_mergedgamma-like.fits", "Results_MSH_15_52_gt2_4_TeV_Custom_mergedgamma-like.fits", "Results_MSH_15_52_std_2d0_ModelPlus_Std_mergedgamma-like.fits"]
+filename_excess   = ["Results_MSH_15_52_0_3_0_6_TeV_Custom_mergedexcess.fits", "Results_MSH_15_52_0_6_1_2_TeV_Custom_mergedexcess.fits", "Results_MSH_15_52_1_2_2_4_TeV_Custom_mergedexcess.fits", "Results_MSH_15_52_gt2_4_TeV_Custom_mergedexcess.fits", "Results_MSH_15_52_std_2d0_ModelPlus_Std_mergedexcess.fits"]
 
-filename_gamma    = ["Results_MSH_15_52_4_30_TeV_HiRes_Custom_mergedgamma-like.fits", "Results_MSH_15_52_4_10_TeV_HiRes_Custom_mergedgamma-like.fits", "Results_MSH_15_52_10_20_TeV_HiRes_Custom_mergedgamma-like.fits", \
-                     "Results_MSH_15_52_4_30_TeV_Custom_mergedgamma-like.fits", "Results_MSH_15_52_4_10_TeV_Custom_mergedgamma-like.fits", "Results_MSH_15_52_10_20_TeV_Custom_mergedgamma-like.fits", \
-                     "Results_MSH_15_52_2_4_4_8_TeV_Custom_mergedgamma-like.fits", "Results_MSH_15_52_4_8_9_6_TeV_Custom_mergedgamma-like.fits", "Results_MSH_15_52_gt9_6_TeV_Custom_mergedgamma-like.fits"]
-
-filename_excess   = ["Results_MSH_15_52_4_30_TeV_HiRes_Custom_mergedexcess.fits", "Results_MSH_15_52_4_10_TeV_HiRes_Custom_mergedexcess.fits", "Results_MSH_15_52_10_20_TeV_HiRes_Custom_mergedexcess.fits", \
-                     "Results_MSH_15_52_4_30_TeV_Custom_mergedexcess.fits", "Results_MSH_15_52_4_10_TeV_Custom_mergedexcess.fits", "Results_MSH_15_52_10_20_TeV_Custom_mergedexcess.fits", \
-                     "Results_MSH_15_52_2_4_4_8_TeV_Custom_mergedexcess.fits", "Results_MSH_15_52_4_8_9_6_TeV_Custom_mergedexcess.fits", "Results_MSH_15_52_gt9_6_TeV_Custom_mergedexcess.fits"]
-
-filename_psf      = ["psf_4-30TeV_HiRes.fits", "psf_4-10TeV_HiRes.fits", "psf_10-20TeV_HiRes.fits", "psf_4-30TeV.fits", "psf_4-10TeV.fits", "psf_10-20TeV.fits", "psf_2-4_4-8TeV.fits", "psf_4-8_9-6TeV.fits", "psf_gt9-6TeV.fits"]
+filename_psf      = ["psf_MSH_15_52_0_3_0_6_TeV.fits", "psf_MSH_15_52_0_6_1_2_TeV.fits", "psf_MSH_15_52_1_2_2_4_TeV.fits", "psf_MSH_15_52_gt2_4_TeV.fits", "psf_std.fits"]
 
 # This exposure maps where first generated by the gammapy script then pixel-corrected
 filename_expo     = [""] * (nb_pa_analyses)
@@ -200,8 +168,8 @@ filename_slice    = "slices_several.txt" #"slices_perp.txt"
 
 # Fit initial parameters
 
-exposure_amplitude     = [1.0e-12, 1.0e-11, 1.0e-11, 1.0e-12, 1.0e-11, 1.0e-11, 1.0e-10, 1.0e-11, 1.0e-12]
-G_comp_ampl            = [1., 1., 1., 1., 1., 1., 1., 1.]
+exposure_amplitude     = [1.0e-9, 1.0e-10, 1.0e-11, 1.0e-12, 1.0e-12]
+G_comp_ampl            = [1., 1., 1., 0.5, 1.0]
 fwhm_init              = 8.
 
 # Analysis pointing coordinates
@@ -225,6 +193,7 @@ if (sliced_selection.find('y') != -1):
     nb_of_slice   = int(sys.argv[5])
 
     boxes         = [x_slice[nb_of_slice], y_slice[nb_of_slice], L_slice[nb_of_slice], l_slice[nb_of_slice], dev_slice[nb_of_slice]]
+
 
 
 

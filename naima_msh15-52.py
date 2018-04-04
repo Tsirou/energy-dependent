@@ -61,13 +61,13 @@ def lnprior(pars):
     return lnprior
 
 def model(pars, data):
-    amplitude = pars[0] / u.eV
+    amplitude = pars[0] / u.TeV
     alpha = pars[1]
     e_cutoff = (10**pars[2]) * u.TeV
 
     ECPL = naima.models.ExponentialCutoffPowerLaw(amplitude, 10*u.TeV, alpha, e_cutoff)
     IC   = naima.models.InverseCompton(ECPL, seed_photon_fields=['CMB',
-                        ['FIR', 45 * u.K, 0.42 * u.eV / u.cm**3], 'NIR'])
+                        ['FIR', 45 * u.K, 0.42 * u.TeV / u.cm**3], 'NIR'])
 
     return IC.flux(data, distance=1.0*u.kpc)
 

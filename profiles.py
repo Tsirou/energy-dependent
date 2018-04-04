@@ -67,7 +67,7 @@ def profile(save_path, fits_files, output_gif_path):
     colors = ["cornflowerblue", "springgreen", "orange", "indianred", "yellow"]
 
 
-    for sl in range(0, len(names.x_slice)):
+    for sl in range(8, len(names.x_slice)):
 
         reset_display()
 
@@ -124,8 +124,12 @@ def profile(save_path, fits_files, output_gif_path):
 
 
             #cut  = radial_profile(source, [x_psr,y_psr])
-            cut   = peak_profile(source, [boxes[0], boxes[1]], boxes[4])
-
+            if(sl < 4):
+                cut   = peak_profile(source, [boxes[0], boxes[1]], boxes[4] + 90., [boxes[2], boxes[3]])
+            if(sl > 3 and sl < 8):
+                cut = peak_profile(source, [boxes[0], boxes[1]], boxes[4] - 180., [boxes[3], 2*boxes[2]])
+            if(sl > 7 and sl < 9):
+                cut = peak_profile(source, [boxes[0], boxes[1]], boxes[4] - 90., [boxes[3], boxes[2]])
 
             x_plane  = np.arange(401)
             x1_plane = 145.74
@@ -138,7 +142,7 @@ def profile(save_path, fits_files, output_gif_path):
             y_cut   = affine(x_cut, x_psr, 0., y_psr, 0.)
 
 
-            ax.plot(cut[90:250], color=colors[fl],label=labels[fl],marker="+",markersize=10, linestyle='-' )
+            ax.plot(cut[50:120], color=colors[fl],label=labels[fl],marker="+",markersize=10, linestyle='-' )
 
 
 

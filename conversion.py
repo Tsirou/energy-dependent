@@ -1,6 +1,6 @@
 import sys
 import names
-import imutils, cv2
+import imutils, cv2, itertools
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,9 +9,10 @@ import matplotlib as mpl
 from astropy import wcs
 from astropy.io import fits
 from scipy import interpolate
+from matplotlib.patches import Polygon
+from astropy.coordinates import SkyCoord
 
 from astropy import units as u
-from astropy.coordinates import SkyCoord
 
 
 #==============================================================================
@@ -401,37 +402,128 @@ def radial_profile(data, center):
     rp   = tbin / nr
     return rp
 
+
+#Found on the web
+def closest_point(points, x0, y0, x1, y1):
+    line_direction   = np.array([x1 - x0, y1 - y0], dtype=float)
+    line_length      = np.sqrt(line_direction[0]**2 + line_direction[1]**2)
+    line_direction  /= line_length
+
+    n_bins           = int(np.ceil(line_length))
+
+    # project points on line
+    projections      = np.array([(p[0] * line_direction[0] + p[1] * line_direction[1]) for p in points])
+
+    # normalize projections so that they can be directly used as indices
+    projections     -= np.min(projections)
+    projections     *= (n_bins - 1) / np.max(projections)
+
+    return np.floor(projections).astype(int), n_bins
+
+
+# Found on the web
+def rect_profile(x0, y0, x1, y1, width, alpha):
+
+    xd    = x1 - x0
+    yd    = y1 - y0
+    #alpha = (np.angle(xd+1j*yd))
+
+    y00 = y0 - np.cos(np.pi - alpha)*width
+    x00 = x0 - np.sin(np.pi - alpha)*width
+
+    y01 = y0 + np.cos(np.pi - alpha)*width
+    x01 = x0 + np.sin(np.pi - alpha)*width
+
+    y10 = y1 + np.cos(np.pi - alpha)*width
+    x10 = x1 + np.sin(np.pi - alpha)*width
+
+    y11 = y1 - np.cos(np.pi - alpha)*width
+    x11 = x1 - np.sin(np.pi - alpha)*width
+
+    vertices = ((y00, x00), (y01, x01), (y10, x10), (y11, x11))
+    poly_points = [x00, x01, x10, x11], [y00, y01, y10, y11]
+    poly = Polygon(((y00, x00), (y01, x01), (y10, x10), (y11, x11)))
+
+    return poly, poly_points
+
+# Found on the web
+def averaged_profile(image, x0, y0, x1, y1, width, alpha):
+    num   = np.sqrt( (x1 - x0)**2 + (y1 - y0)**2)
+    x, y  = np.linspace(x0, x1, num), np.linspace(y0, y1, num)
+    coords = list(zip(x, y))
+
+    # Get all points that are in Rectangle
+    poly, poly_points = rect_profile(x0, y0, x1, y1, width, alpha)
+    points_in_poly = []
+    for point in itertools.product( range(image.shape[0]), range(image.shape[1])):
+        if poly.get_path().contains_point(point, radius=1) == True:
+            points_in_poly.append((point[1], point[0]))
+
+    # Finds closest point on line for each point in poly
+    neighbours, n_bins = closest_point(points_in_poly, x0, y0, x1, y1)
+
+    # Add all phase values corresponding to closest point on line
+    data = [[] for _ in range(n_bins)]
+    for idx in enumerate(points_in_poly):
+        index = neighbours[idx[0]]
+        data[index].append(image[idx[1][1], idx[1][0]])
+
+    # Average data perpendicular to profile
+    for i in enumerate(data):
+        data[i[0]] = np.nanmean(data[i[0]])
+
+    # Plot
+    fig, axes = plt.subplots(figsize=(10, 5), nrows=1, ncols=2)
+
+    axes[0].imshow(image)
+    axes[0].plot([poly_points[0][0], poly_points[0][1]], [poly_points[1][0], poly_points[1][1]], 'yellow')
+    axes[0].plot([poly_points[0][1], poly_points[0][2]], [poly_points[1][1], poly_points[1][2]], 'yellow')
+    axes[0].plot([poly_points[0][2], poly_points[0][3]], [poly_points[1][2], poly_points[1][3]], 'yellow')
+    axes[0].plot([poly_points[0][3], poly_points[0][0]], [poly_points[1][3], poly_points[1][0]], 'yellow')
+    axes[0].axis('image')
+    axes[1].plot(data)
+    return data
+
+
 # Profile from the peak position
-def peak_profile(data, center, angle):
-    x, y     = np.indices((data.shape))
+def peak_profile(data, center, angle, widths):
 
-    new_data   = imutils.rotate(data, angle)
+    new_data = data#imutils.rotate(data, angle)
 
-    ind_max  = np.unravel_index(np.argmax(new_data, axis=None), new_data.shape)
-
-    #center   = imutils.rotate(center, angle)
-
-    ind_rand = [ind_max[0], center[1]]
-
-    plt.imshow(new_data, cmap="hot")
-    #plt.imshow(data, cmap="hot")
+    x, y     = np.indices((new_data.shape))
 
 
-    plt.plot(center[0], center[1], "m+")
-    plt.plot(ind_max[0], ind_max[1], "w+")
+    #ind_max  = np.unravel_index(np.ndarray.argmax(new_data, axis=None), new_data.shape)
 
-    plt.show()
+    check_max = [new_data[0,0], 0, 0]
+    for i in range(0, len(new_data)):
+        for j in range(0, len(new_data)):
+            check = [new_data[i,j], j, i]
+            if(check[0] >= check_max[0]):
+                check_max = check
 
+    ind_max    = [check_max[1], check_max[2]]
+    ind_rand   = center
 
-    plt.show()
+    #img = plt.imshow(new_data, cmap="hot")
+    #
+    # plt.plot(center[0], center[1], "m+")
+    # plt.plot(ind_max[0], ind_max[1], "c+")
+    # plt.show()
+    #
+    # plt.imshow(data, cmap="hot")
+    # plt.show()
 
     r        = affine(x, ind_max[0], ind_max[1], ind_rand[0], ind_rand[1]  )
-
     r        = r.astype(np.int)
 
-    tbin     = np.bincount(r.ravel(), data.ravel())
-    nr       = np.bincount(r.ravel())
-    rp       = tbin / nr
+    # tbin     = np.bincount(r.ravel(), new_data.ravel())
+    # nr       = np.bincount(r.ravel())
+    # rp       = tbin / nr
+
+
+    #rp = averaged_profile(new_data, center[0] + widths[0]/2, center[1] + widths[1]/2, center[0] - widths[0]/2, center[1] - widths[1]/2, widths[1], angle)
+    rp = averaged_profile(new_data, ind_rand[0], ind_rand[1], ind_max[0], ind_max[1], widths[1], angle)
 
     return rp
 
