@@ -33,11 +33,13 @@ labels           = ["[0.3 - 0.6] TeV", "[0.6 - 1.2] TeV", "[1.2 - 2.4] TeV", " >
 save_path        = names.path_template[0]
 output_gif_path  = names.path[0]
 
-# for f in range (0,len(names.filename_gamma)):
-#     fits_files.append(names.filename_gamma[f])
+label_kind       = "$N_{ON}$"
+for f in range (0,len(names.filename_gamma) - 1):
+    fits_files.append(names.filename_gamma[f])
 
-for f in range (0,len(names.filename_excess) - 1):
-    fits_files.append(names.filename_excess[f])
+# label_kind     = "Excess"
+# for f in range (0,len(names.filename_excess) - 1):
+#     fits_files.append(names.filename_excess[f])
 
 g1               = []
 
@@ -45,8 +47,8 @@ g1               = []
 
 
 def profile(save_path, fits_files, output_gif_path):
-    ra_psr = 228.4818
-    dec_psr = -59.1358
+    ra_psr   = 228.4818
+    dec_psr  = -59.1358
     glon_psr = 320.3208
     glat_psr = -1.1619
 
@@ -67,31 +69,33 @@ def profile(save_path, fits_files, output_gif_path):
     colors = ["cornflowerblue", "springgreen", "orange", "indianred", "yellow"]
 
 
-    for sl in range(8, len(names.x_slice)):
+    for sl in range(0, len(names.x_slice)):
+
+        progress(sl, len(names.x_slice), 'slice ' + str(sl))
 
         reset_display()
 
-        plt.style.use('dark_background')
+        #plt.style.use('dark_background')
 
         fig = plt.figure()
 
         fig.set_size_inches(10.5,8.5)
 
         ax = fig.add_subplot(111)
-        ax.patch.set_facecolor('black')
-        ax.spines['top'].set_color('w')
-        ax.spines['bottom'].set_color('w')
-        ax.spines['left'].set_color('w')
-        ax.spines['right'].set_color('w')
-
-        ax.xaxis.label.set_color('w')
-
-        ax.set_title('MSH 15-5$\mathit{2}$ energy-dependent profiles', fontsize=13, color='w')
-
-        ax.set_xlabel('Distance to PSR B1509-58')
-        ax.set_ylabel('Excess')
-
-        plt.axhline(y = 0., color='w', linestyle = "-")
+        # ax.patch.set_facecolor('black')
+        # ax.spines['top'].set_color('w')
+        # ax.spines['bottom'].set_color('w')
+        # ax.spines['left'].set_color('w')
+        # ax.spines['right'].set_color('w')
+        #
+        # ax.xaxis.label.set_color('w')
+        #
+        # ax.set_title('MSH 15-5$\mathit{2}$ energy-dependent profiles', fontsize=13, color='w')
+        #
+        # ax.set_xlabel('Distance to PSR B1509-58')
+        # ax.set_ylabel(label_kind)
+        #
+        # plt.axhline(y = 0., color='w', linestyle = "-")
 
 
         source    = []
@@ -101,6 +105,8 @@ def profile(save_path, fits_files, output_gif_path):
             list_model_path = save_path + fits_files[fl]
 
             hdu_gif_model = fits.open(list_model_path)
+
+            normalised    = np.sum(hdu_gif_model[names.hdu_ext].data, axis=None)
 
             sherpa.load_image(list_model_path)
 
@@ -122,14 +128,11 @@ def profile(save_path, fits_files, output_gif_path):
 
             img = ndimage.gaussian_filter(source, sigma=0, order=0)
 
+            plotted     = 'n'
+            normalised  = normalised * 1.0e-5
 
-            #cut  = radial_profile(source, [x_psr,y_psr])
-            if(sl < 4):
-                cut   = peak_profile(source, [boxes[0], boxes[1]], boxes[4] + 90., [boxes[2], boxes[3]])
-            if(sl > 3 and sl < 8):
-                cut = peak_profile(source, [boxes[0], boxes[1]], boxes[4] - 180., [boxes[3], 2*boxes[2]])
-            if(sl > 7 and sl < 9):
-                cut = peak_profile(source, [boxes[0], boxes[1]], boxes[4] - 90., [boxes[3], boxes[2]])
+            cut               = peak_profile(source, [boxes[0], boxes[1]], boxes[4] , [boxes[2], boxes[3]], plotted, sl, normalised )
+            cut_error         = peak_profile(np.sqrt(source)/2., [boxes[0], boxes[1]], boxes[4] , [boxes[2], boxes[3]], plotted, sl, np.sqrt(normalised))
 
             x_plane  = np.arange(401)
             x1_plane = 145.74
@@ -141,18 +144,27 @@ def profile(save_path, fits_files, output_gif_path):
             x_cut   = np.arange(401)
             y_cut   = affine(x_cut, x_psr, 0., y_psr, 0.)
 
+            if(plotted.find('y') != -1):
+                plt.savefig(output_gif_path + fits_files[fl][:-6] + '_slice' + str(sl) + '.png', dpi=100)
 
-            ax.plot(cut[50:120], color=colors[fl],label=labels[fl],marker="+",markersize=10, linestyle='-' )
+            ax.plot(cut, color=colors[fl], label=labels[fl], marker="+", markersize=10, linestyle='-' )
+            ax.plot([a - b for a, b in zip(cut, cut_error)], color=colors[fl], linestyle='--', alpha=0.3)
+            ax.plot([a + b for a, b in zip(cut, cut_error)], color=colors[fl], linestyle='--', alpha=0.3)
 
-
+            array_x   = np.arange(0, len(cut))
+            ax.fill_between(array_x, [a - b for a, b in zip(cut, cut_error)], [a + b for a, b in zip(cut, cut_error)], alpha = 0.3)
 
         ax.legend(fontsize=15, numpoints=1, loc=1)
 
         ax.tick_params(axis='both', which='both', labelsize=20, color='w')
 
-        plt.show()
 
-        plt.savefig(output_gif_path + fits_files[fl][:-6] + '_energy-dependent_profiles_slice' + str(sl) + '.png', dpi=100)
+
+        if(plotted.find('n') != -1):
+            plt.savefig(output_gif_path + fits_files[fl][:-6] + '_energy-dependent_profiles_slice' + str(sl) + '.png', dpi=100)
+        else:
+            plt.show()
+
         plt.clf()
 
         hdu_gif_model.close()

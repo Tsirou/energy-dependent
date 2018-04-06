@@ -1,4 +1,4 @@
-import sys
+import sys, os
 import names
 import imutils, cv2, itertools
 
@@ -385,10 +385,30 @@ def Sersic_profile(n, r_0, epsilon, theta, x_o, y_o, A):
 
 def X_Y_rotation(x, y, angle):
 
-    x_rot   = (x * np.cos(angle * np.pi / 180.)) + (y * np.sin(angle * np.pi / 180.))
-    y_rot   = (y * np.cos(angle * np.pi / 180.)) - (x * np.sin(angle * np.pi / 180.))
+    x_rot   = (x * np.cos(angle * np.pi / 180.)) - (y * np.sin(angle * np.pi / 180.))
+    y_rot   = (y * np.cos(angle * np.pi / 180.)) + (x * np.sin(angle * np.pi / 180.))
 
     return x_rot, y_rot
+
+def rectangle_CoM_rotation(rect_points_x, rect_points_y, angle):
+
+    CoM_x   = 0.5 * (rect_points_x[0] + rect_points_x[2])
+    CoM_y   = 0.5 * (rect_points_y[0] + rect_points_y[1])
+
+    rect_points_x_sub_CoM   = rect_points_x - CoM_x
+    rect_points_y_sub_CoM   = rect_points_y - CoM_y
+
+    rect_points_x_rot, rect_points_y_rot   = X_Y_rotation(rect_points_x_sub_CoM, rect_points_y_sub_CoM, angle)
+
+    rect_points_x_add_CoM   = rect_points_x_rot + CoM_x
+    rect_points_y_add_CoM   = rect_points_y_rot + CoM_y
+
+    rect_points_trans_x     = rect_points_x_add_CoM
+    rect_points_trans_y     = rect_points_y_add_CoM
+
+
+    return rect_points_trans_x, rect_points_trans_y
+
 
 # Radial profile estimation [Found on the web]
 def radial_profile(data, center):
@@ -403,13 +423,16 @@ def radial_profile(data, center):
     return rp
 
 
-#Found on the web
-def closest_point(points, x0, y0, x1, y1):
+#Found on the web and edited
+def closest_point(points, x0, y0, x1, y1, nbins):
     line_direction   = np.array([x1 - x0, y1 - y0], dtype=float)
     line_length      = np.sqrt(line_direction[0]**2 + line_direction[1]**2)
     line_direction  /= line_length
 
-    n_bins           = int(np.ceil(line_length))
+    if(nbins < 0):
+        n_bins           = int(np.ceil(line_length))
+    else:
+        n_bins           = nbins
 
     # project points on line
     projections      = np.array([(p[0] * line_direction[0] + p[1] * line_direction[1]) for p in points])
@@ -421,7 +444,7 @@ def closest_point(points, x0, y0, x1, y1):
     return np.floor(projections).astype(int), n_bins
 
 
-# Found on the web
+# Found on the web and edited
 def rect_profile(x0, y0, x1, y1, width, alpha):
 
     xd    = x1 - x0
@@ -446,8 +469,35 @@ def rect_profile(x0, y0, x1, y1, width, alpha):
 
     return poly, poly_points
 
-# Found on the web
-def averaged_profile(image, x0, y0, x1, y1, width, alpha):
+def box_region(x, y , l, L, angle):
+
+    xd       = l
+    yd       = L
+    outline  = 3.
+
+    x1       = x + xd/2. + outline
+    y1       = y + yd/2. + outline
+    x2       = x + xd/2. + outline
+    y2       = y - yd/2. - outline
+    x3       = x - xd/2. - outline
+    y3       = y - yd/2. - outline
+    x4       = x - xd/2. - outline
+    y4       = y + yd/2. + outline
+
+    rectangle_x   = [x1, x2, x3, x4]
+    rectangle_y   = [y1, y2, y3, y4]
+
+
+    rot_rectangle_x, rot_rectangle_y = rectangle_CoM_rotation(rectangle_x, rectangle_y, angle)
+
+    vertices = ((rot_rectangle_y[0], rot_rectangle_x[0]), (rot_rectangle_y[1], rot_rectangle_x[1]), (rot_rectangle_y[2], rot_rectangle_x[2]), (rot_rectangle_y[3], rot_rectangle_x[3]))
+    poly_points = rot_rectangle_x, rot_rectangle_y
+    poly = Polygon(vertices)
+
+    return poly, poly_points
+
+# Found on the web and edited
+def averaged_profile(image, x0, y0, x1, y1, width, alpha, plotted):
     num   = np.sqrt( (x1 - x0)**2 + (y1 - y0)**2)
     x, y  = np.linspace(x0, x1, num), np.linspace(y0, y1, num)
     coords = list(zip(x, y))
@@ -472,30 +522,86 @@ def averaged_profile(image, x0, y0, x1, y1, width, alpha):
     for i in enumerate(data):
         data[i[0]] = np.nanmean(data[i[0]])
 
-    # Plot
-    fig, axes = plt.subplots(figsize=(10, 5), nrows=1, ncols=2)
+    if(plotted.find('y') != -1):
+        # Plot
+        fig, axes = plt.subplots(figsize=(15, 10), nrows=1, ncols=2)
 
-    axes[0].imshow(image)
-    axes[0].plot([poly_points[0][0], poly_points[0][1]], [poly_points[1][0], poly_points[1][1]], 'yellow')
-    axes[0].plot([poly_points[0][1], poly_points[0][2]], [poly_points[1][1], poly_points[1][2]], 'yellow')
-    axes[0].plot([poly_points[0][2], poly_points[0][3]], [poly_points[1][2], poly_points[1][3]], 'yellow')
-    axes[0].plot([poly_points[0][3], poly_points[0][0]], [poly_points[1][3], poly_points[1][0]], 'yellow')
-    axes[0].axis('image')
-    axes[1].plot(data)
+        axes[0].imshow(image, cmap=plt.get_cmap('seismic',3), vmin=-0.001, vmax=0.001, origin='lower')
+        color_polygone   = 'black'
+        axes[0].plot([poly_points[0][0], poly_points[0][1]], [poly_points[1][0], poly_points[1][1]], color_polygone)
+        axes[0].plot([poly_points[0][1], poly_points[0][2]], [poly_points[1][1], poly_points[1][2]], color_polygone)
+        axes[0].plot([poly_points[0][2], poly_points[0][3]], [poly_points[1][2], poly_points[1][3]], color_polygone)
+        axes[0].plot([poly_points[0][3], poly_points[0][0]], [poly_points[1][3], poly_points[1][0]], color_polygone)
+        axes[0].axis('image')
+        axes[1].plot(data)
+
+    return data
+
+
+def averaged_profile_with_a_twist(image, x, y, l, L, angle, plotted, slice_nb, nbins):
+
+    # Get all the points within the rotated rectangle
+    poly, poly_points = box_region(x, y, l, L, angle)
+    points_in_poly = []
+    for point in itertools.product( range(image.shape[0]), range(image.shape[1])):
+        if poly.get_path().contains_point(point, radius=1) == True:
+            points_in_poly.append((point[1], point[0]))
+
+    # Finds closest point on line for each point in poly
+    if(slice_nb < 4):
+        x1, y1   = poly_points[0][1] + abs(poly_points[0][1] - poly_points[0][2]) /2. , poly_points[1][1] + abs(poly_points[1][1] - poly_points[1][2]) /2.
+    if(slice_nb > 3):
+        x1, y1   = poly_points[0][1] + abs(poly_points[0][1] - poly_points[0][0]) /2. , poly_points[1][1] - abs(poly_points[1][1] - poly_points[1][0]) /2.
+    if(slice_nb == 9):
+        x1, y1   = poly_points[0][1] + abs(poly_points[0][1] - poly_points[0][2]) /2. , poly_points[1][1] + abs(poly_points[1][1] - poly_points[1][2]) /2.
+    if(slice_nb == 10):
+        x1, y1 = poly_points[0][1] + abs(poly_points[0][1] - poly_points[0][2]) / 2., poly_points[1][1] - abs(poly_points[1][1] - poly_points[1][2]) / 2.
+
+    neighbours, n_bins = closest_point(points_in_poly, x, y, x1, y1, nbins)
+
+    # Add all phase values corresponding to closest point on line
+    data = [[] for _ in range(n_bins)]
+    for idx in enumerate(points_in_poly):
+        index = neighbours[idx[0]]
+        data[index].append(image[idx[1][1], idx[1][0]])
+
+    # Average data perpendicular to profile
+    for i in enumerate(data):
+        data[i[0]] = np.nanmean(data[i[0]])
+
+    if(plotted.find('y') != -1):
+        # Plot
+        fig, axes = plt.subplots(figsize=(15, 10), nrows=1, ncols=2)
+
+        axes[0].imshow(image, cmap=plt.get_cmap('seismic',3), vmin=-0.001, vmax=0.001, origin='lower')
+        color_polygone   = 'teal'
+        axes[0].plot([poly_points[0][0], poly_points[0][1]], [poly_points[1][0], poly_points[1][1]], color_polygone)
+        axes[0].plot([poly_points[0][1], poly_points[0][2]], [poly_points[1][1], poly_points[1][2]], color_polygone)
+        axes[0].plot([poly_points[0][2], poly_points[0][3]], [poly_points[1][2], poly_points[1][3]], color_polygone)
+        axes[0].plot([poly_points[0][3], poly_points[0][0]], [poly_points[1][3], poly_points[1][0]], color_polygone)
+        axes[0].axis('image')
+
+        xx, yy = np.indices((image.shape))
+        axes[0].plot(affine(xx, x, y, x1, y1), 'green')
+        axes[0].plot(x, y, 'y+')
+        axes[0].plot(x1, y1, 'y+')
+
+        axes[1].plot(data)
+
+
     return data
 
 
 # Profile from the peak position
-def peak_profile(data, center, angle, widths):
+def peak_profile(data, center, angle, widths, plotted, slice_nb, normalisation):
 
-    new_data = data#imutils.rotate(data, angle)
-
+    new_data = data / normalisation
     x, y     = np.indices((new_data.shape))
 
-
+    # new_data = imutils.rotate(data, angle)
     #ind_max  = np.unravel_index(np.ndarray.argmax(new_data, axis=None), new_data.shape)
 
-    check_max = [new_data[0,0], 0, 0]
+    check_max     = [new_data[0,0], 0, 0]
     for i in range(0, len(new_data)):
         for j in range(0, len(new_data)):
             check = [new_data[i,j], j, i]
@@ -505,25 +611,12 @@ def peak_profile(data, center, angle, widths):
     ind_max    = [check_max[1], check_max[2]]
     ind_rand   = center
 
-    #img = plt.imshow(new_data, cmap="hot")
-    #
-    # plt.plot(center[0], center[1], "m+")
-    # plt.plot(ind_max[0], ind_max[1], "c+")
-    # plt.show()
-    #
-    # plt.imshow(data, cmap="hot")
-    # plt.show()
-
     r        = affine(x, ind_max[0], ind_max[1], ind_rand[0], ind_rand[1]  )
     r        = r.astype(np.int)
 
-    # tbin     = np.bincount(r.ravel(), new_data.ravel())
-    # nr       = np.bincount(r.ravel())
-    # rp       = tbin / nr
+    angle    = angle
 
-
-    #rp = averaged_profile(new_data, center[0] + widths[0]/2, center[1] + widths[1]/2, center[0] - widths[0]/2, center[1] - widths[1]/2, widths[1], angle)
-    rp = averaged_profile(new_data, ind_rand[0], ind_rand[1], ind_max[0], ind_max[1], widths[1], angle)
+    rp = averaged_profile_with_a_twist(new_data, center[0], center[1], widths[0], widths[1], angle, plotted, slice_nb, nbins=20)
 
     return rp
 
