@@ -429,10 +429,7 @@ def closest_point(points, x0, y0, x1, y1, nbins):
     line_length      = np.sqrt(line_direction[0]**2 + line_direction[1]**2)
     line_direction  /= line_length
 
-    if(nbins < 0):
-        n_bins           = int(np.ceil(line_length))
-    else:
-        n_bins           = nbins
+    n_bins           = int(np.ceil(line_length) / nbins)
 
     # project points on line
     projections      = np.array([(p[0] * line_direction[0] + p[1] * line_direction[1]) for p in points])
@@ -473,7 +470,7 @@ def box_region(x, y , l, L, angle):
 
     xd       = l
     yd       = L
-    outline  = 3.
+    outline  = 0.
 
     x1       = x + xd/2. + outline
     y1       = y + yd/2. + outline
@@ -548,14 +545,18 @@ def averaged_profile_with_a_twist(image, x, y, l, L, angle, plotted, slice_nb, n
             points_in_poly.append((point[1], point[0]))
 
     # Finds closest point on line for each point in poly
-    if(slice_nb < 4):
+    if(slice_nb < 3):
+        x1, y1   = poly_points[0][1] + abs(poly_points[0][1] - poly_points[0][2]) /2. , poly_points[1][1] - abs(poly_points[1][1] - poly_points[1][2]) /2.
+        x, y     = poly_points[0][0] + abs(poly_points[0][0] - poly_points[0][3]) /2. , poly_points[1][0] - abs(poly_points[1][0] - poly_points[1][3]) /2.
+    if(slice_nb > 2 and slice_nb < 6):
         x1, y1   = poly_points[0][1] + abs(poly_points[0][1] - poly_points[0][2]) /2. , poly_points[1][1] + abs(poly_points[1][1] - poly_points[1][2]) /2.
-    if(slice_nb > 3):
-        x1, y1   = poly_points[0][1] + abs(poly_points[0][1] - poly_points[0][0]) /2. , poly_points[1][1] - abs(poly_points[1][1] - poly_points[1][0]) /2.
-    if(slice_nb == 9):
+        x, y     = poly_points[0][0] + abs(poly_points[0][0] - poly_points[0][3]) /2. , poly_points[1][0] + abs(poly_points[1][0] - poly_points[1][3]) /2.
+    if(slice_nb == 6):
         x1, y1   = poly_points[0][1] + abs(poly_points[0][1] - poly_points[0][2]) /2. , poly_points[1][1] + abs(poly_points[1][1] - poly_points[1][2]) /2.
-    if(slice_nb == 10):
+        x, y     = poly_points[0][0] + abs(poly_points[0][0] - poly_points[0][3]) /2. , poly_points[1][0] + abs(poly_points[1][0] - poly_points[1][3]) /2.
+    if(slice_nb == 7):
         x1, y1 = poly_points[0][1] + abs(poly_points[0][1] - poly_points[0][2]) / 2., poly_points[1][1] - abs(poly_points[1][1] - poly_points[1][2]) / 2.
+        x, y     = poly_points[0][0] + abs(poly_points[0][0] - poly_points[0][3]) /2. , poly_points[1][0] - abs(poly_points[1][0] - poly_points[1][3]) /2.
 
     neighbours, n_bins = closest_point(points_in_poly, x, y, x1, y1, nbins)
 
@@ -573,7 +574,7 @@ def averaged_profile_with_a_twist(image, x, y, l, L, angle, plotted, slice_nb, n
         # Plot
         fig, axes = plt.subplots(figsize=(15, 10), nrows=1, ncols=2)
 
-        axes[0].imshow(image, cmap=plt.get_cmap('seismic',3), vmin=-0.001, vmax=0.001, origin='lower')
+        axes[0].imshow(image, cmap=plt.get_cmap('seismic',3), vmin=-1, vmax=1, origin='lower')
         color_polygone   = 'teal'
         axes[0].plot([poly_points[0][0], poly_points[0][1]], [poly_points[1][0], poly_points[1][1]], color_polygone)
         axes[0].plot([poly_points[0][1], poly_points[0][2]], [poly_points[1][1], poly_points[1][2]], color_polygone)
@@ -592,8 +593,26 @@ def averaged_profile_with_a_twist(image, x, y, l, L, angle, plotted, slice_nb, n
     return data
 
 
-# Profile from the peak position
-def peak_profile(data, center, angle, widths, plotted, slice_nb, normalisation):
+#Detetion of the peak position
+def det_peak(new_data):
+
+    check_max     = [new_data[0,0], 0, 0]
+    for i in range(0, len(new_data)):
+        for j in range(0, len(new_data)):
+
+            check = [new_data[i,j], j, i]
+
+            if(check[0] >= check_max[0]):
+
+
+                check_max = check
+
+    peak   = [check_max[1], check_max[2]]
+
+    return peak
+
+# Profile from the peak position [obsolete name]
+def peak_profile(data, center, angle, widths, plotted, slice_nb, normalisation, number_of_bins):
 
     new_data = data / normalisation
     x, y     = np.indices((new_data.shape))
@@ -601,14 +620,9 @@ def peak_profile(data, center, angle, widths, plotted, slice_nb, normalisation):
     # new_data = imutils.rotate(data, angle)
     #ind_max  = np.unravel_index(np.ndarray.argmax(new_data, axis=None), new_data.shape)
 
-    check_max     = [new_data[0,0], 0, 0]
-    for i in range(0, len(new_data)):
-        for j in range(0, len(new_data)):
-            check = [new_data[i,j], j, i]
-            if(check[0] >= check_max[0]):
-                check_max = check
+    check_max     = det_peak(new_data)
 
-    ind_max    = [check_max[1], check_max[2]]
+    ind_max    = [check_max[0], check_max[1]]
     ind_rand   = center
 
     r        = affine(x, ind_max[0], ind_max[1], ind_rand[0], ind_rand[1]  )
@@ -616,7 +630,7 @@ def peak_profile(data, center, angle, widths, plotted, slice_nb, normalisation):
 
     angle    = angle
 
-    rp = averaged_profile_with_a_twist(new_data, center[0], center[1], widths[0], widths[1], angle, plotted, slice_nb, nbins=20)
+    rp = averaged_profile_with_a_twist(new_data, center[0], center[1], widths[0], widths[1], angle, plotted, slice_nb, nbins=number_of_bins)
 
     return rp
 

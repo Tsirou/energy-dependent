@@ -317,7 +317,6 @@ def fits_cuts(save_path, output_gif_path, fits_files,zoom):
         ax.append(plt.subplot(gs[3]))
 
 
-
         ax[0].set_xlim(zoom_1, zoom_2)
         ax[0].set_ylim(zoom_1, zoom_2)
 
@@ -360,7 +359,6 @@ def fits_cuts(save_path, output_gif_path, fits_files,zoom):
 
         x, y = np.linspace(zoom_1, zoom_2, zoom_2-zoom_1), np.linspace(zoom_1, zoom_2, zoom_2-zoom_1)
         X, Y = np.meshgrid(x, y)
-
 
         #center = [w/2, h/2]
         center = [int(x_pix_psr * ( (zoom_2-zoom_1) / 400.)),int(y_pix_psr * ( (zoom_2-zoom_1) / 400.))]

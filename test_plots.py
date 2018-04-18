@@ -35,8 +35,8 @@ fig.set_size_inches(12.5, 10.5)
 
 
 # Sersic parameters
-
-n         = 0.5240
+#0.5240
+n         = [0.1, 0.3, 0.5, 0.7, 1.0]#, 2.0, 10.0, 20.0]
 r_0       = 16.74
 epsilon   = 0.3947
 theta     = 3.716
@@ -62,9 +62,13 @@ A         = 0.068
 # plt.show()
 
 
+for i in n :
+    f   = Sersic_profile(i, r_0, epsilon, theta, x_o, y_o, A)
 
-f   = Sersic_profile(n, r_0, epsilon, theta, x_o, y_o, A)
+    plt.plot(f[150:250], label="n = " + str(i)[:4])
 
-plt.plot(f)
+plt.legend(fontsize=15, numpoints=1, loc=1)
+
 plt.show()
+
 
