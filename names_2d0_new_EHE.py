@@ -13,11 +13,12 @@ bkg_option        = ""
 
 #==============================================================================
 # Input arguments :
-# 0              : python [command]
-# 1              : analysis [names]
-# 2              : component_list_index_start [main]
-# 3              : component_list_index_end [main]
-# 4              ; nb_of_slice [names]
+# 0               : python [command]
+# 1               : analysis [names]
+# 2               : component_list_index_start [main]
+# 3               : component_list_index_end [main]
+# 4               : sliced_selection [names]
+# 5               : nb_of_slice [names]
 #==============================================================================
 
 #==============================================================================
@@ -37,7 +38,6 @@ confidence_levels    = 'n' # yes (y) or no (n) for computing the confidence inte
 r_psf_0           = 0
 r_psf_1           = 0
 r_psf_2           = 0
-
 
 r_obs             = 0
 r_intrinsic       = 0

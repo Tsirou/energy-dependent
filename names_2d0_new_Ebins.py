@@ -1,4 +1,6 @@
+import sys, os
 import numpy as np
+
 
 fit_psf           = ""
 rebinned          = ""
@@ -9,6 +11,15 @@ save_option       = ""
 fit_option        = ""
 bkg_option        = ""
 
+#==============================================================================
+# Input arguments :
+# 0               : python [command]
+# 1               : analysis [names]
+# 2               : component_list_index_start [main]
+# 3               : component_list_index_end [main]
+# 4               : sliced_selection [names]
+# 5               : nb_of_slice [names]
+#==============================================================================
 
 #==============================================================================
 # Various variables
@@ -16,12 +27,12 @@ bkg_option        = ""
 
 
 random_convert_shift =  0  # 1 or 0 --- Depends on the matrix conventions
-display_ds9          = 'y' # yes (y) or no (n) for displaying with ds9 the fit steps
+display_ds9          = 'n' # yes (y) or no (n) for displaying with ds9 the fit steps
 circular_selection   = 'n' # yes (y) or no (n) for selecting a circular region for fitting
-sliced_selection     = 'y' # yes (y) or no (n) for selecting a circular region for fitting
+sliced_selection     = sys.argv[4] # yes (y) or no (n) for selecting a circular region for fitting
 bkg_thaw             = 'n' # yes (y) or no (n) for thawing the background amplitude
 bkg_amplitude        = 1.0 # usually set to 1.0 but could also be +/- 2%
-confidence_levels    = 'y' # yes (y) or no (n) for computing the confidence intervals (time-consuming!)
+confidence_levels    = 'n' # yes (y) or no (n) for computing the confidence intervals (time-consuming!)
 
 
 r_psf_0           = 0
@@ -44,7 +55,7 @@ factor_pix2deg    = 0.
 
 
 ###############################################
-analysis          = 4
+analysis          = int(sys.argv[1])
 # Tag for the different analyses :
 #     0    : PA 2.0deg 0.3 - 0.6 TeV
 #     1    : PA 2.0deg 0.6 - 1.2 TeV
@@ -176,12 +187,14 @@ X_psr    = 201.921740646
 Y_psr    = 201.670122119
 
 
-#Slices to be fit only in a xr conf
-x_slice,y_slice,L_slice,l_slice,dev_slice     =  np.loadtxt(save_path_sliced[analysis] + filename_slice,dtype=float,usecols=(0,1,2,3,4),unpack=True,skiprows=1)
+#Slices to be fit only in an xr conf
+if (sliced_selection.find('y') != -1):
+    x_slice,y_slice,L_slice,l_slice,dev_slice     =  np.loadtxt(save_path_sliced[analysis] + filename_slice,dtype=float,usecols=(0,1,2,3,4),unpack=True,skiprows=1)
 
-nb_of_slice   = 1
+    nb_of_slice   = int(sys.argv[5])
 
-boxes         = [x_slice[nb_of_slice],y_slice[nb_of_slice],L_slice[nb_of_slice],l_slice[nb_of_slice],dev_slice[nb_of_slice]]
+    boxes         = [x_slice[nb_of_slice], y_slice[nb_of_slice], L_slice[nb_of_slice], l_slice[nb_of_slice], dev_slice[nb_of_slice]]
+
 
 
 

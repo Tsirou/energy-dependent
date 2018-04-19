@@ -29,18 +29,35 @@ fits_files_ex    = []
 
 zoom             = "all_n"
 
-#labels           = [" > 0.3 TeV", "[0.3 - 0.6] TeV", "[0.6 - 0.9] TeV", "[0.9 - 3.0] TeV", " > 3.0 TeV"]
-labels           = ["[0.3 - 0.6] TeV", "[0.6 - 1.2] TeV", "[1.2 - 2.4] TeV", " > 2.4 TeV", "[0.3 - 100] TeV"]
+slices_lables    = ["I-1", "I-2", "I-3", "II-1", "II-2", "II.3", "I", "II"]
+
+
+# labels             = [" > 0.3 TeV", "[0.3 - 0.6] TeV", "[0.6 - 0.9] TeV", "[0.9 - 3.0] TeV", " > 3.0 TeV"]
+
+labels             = ["[0.3 - 0.6] TeV", "[0.6 - 1.2] TeV", "[1.2 - 2.4] TeV", " > 2.4 TeV", "[0.3 - 100] TeV"]
+number_of_analyses = [0, names.nb_pa_analyses]
+last_a             = 1
+
+# labels             = ["[2.4 - 4.8] TeV", "[4.8 - 9.6] TeV", " > 9.6 TeV"]
+# number_of_analyses = [6, names.nb_pa_analyses]
+# last_a             = 0
+
+# labels             = ["[4 - 30] TeV", "[4 - 10] TeV", " [10 - 20] TeV"]
+# labels             = ["[4 - 10] TeV", " [10 - 20] TeV"]
+# number_of_analyses = [4,6]#[1,3] #[3, 6]
+# last_a             = 0
 
 save_path        = names.path_template[0]
 output_gif_path  = names.path[0]
 
-label_kind       = "$N_{ON}$ per total excess (x 10$^{-4}$) "
-for f in range (0,len(names.filename_gamma)):
+label_kind       = "$N_{ON}$ per total excess " #(x 10$^{-4}$) "
+for f in range (number_of_analyses[0], number_of_analyses[1]):
     fits_files.append(names.filename_gamma[f])
+files_fits         = len(fits_files) - last_a
+
 
 #label_kind     = "Excess"
-for f in range (0,len(names.filename_excess)):
+for f in range (number_of_analyses[0], number_of_analyses[1]):
     fits_files_ex.append(names.filename_excess[f])
 
 g1               = []
@@ -69,7 +86,7 @@ def profile(save_path, fits_files, output_gif_path):
     plt.clf()
 
     colors = ["cornflowerblue", "springgreen", "orange", "indianred", "yellow"]
-
+    #
 
     for sl in range(0, len(names.x_slice)):
 
@@ -132,7 +149,7 @@ def profile(save_path, fits_files, output_gif_path):
 
         source    = []
 
-        for fl in range(0,len(fits_files) -1):
+        for fl in range(0, files_fits):
 
             list_model_path = save_path + fits_files[fl]
             hdu_gif_model   = fits.open(list_model_path)
@@ -167,20 +184,22 @@ def profile(save_path, fits_files, output_gif_path):
             source           = hdu_gif_model[names.hdu_ext - 1].data
             source           = np.nan_to_num(source)
 
+            # normalised       = np.sum(np.nan_to_num(hdu_gif_model[names.hdu_ext-1].data), axis=None)
 
             img = ndimage.gaussian_filter(source, sigma=0, order=0)
 
             plotted     = 'n'
-            normalised  = normalised * 1.0e-4
-            nbins       = 11
-            de        = 0 #2
+            normalised  = normalised #* 1.0e-1
+            nbins       = 3.
+            de          = 0 #2
+
 
 
             cut               = peak_profile(source, [boxes[0], boxes[1]], boxes[4] , [boxes[2], boxes[3]], plotted, sl, normalised, nbins )
-            # cut_error         = peak_profile(np.sqrt(source), [boxes[0], boxes[1]], boxes[4] , [boxes[2], boxes[3]], plotted, sl, 1, nbins)
-            ref_error         = peak_profile(source, [boxes[0], boxes[1]], boxes[4] , [boxes[2], boxes[3]], plotted, sl, 1.0, nbins)
             ref               = peak_profile(source, [boxes[0], boxes[1]], boxes[4] , [boxes[2], boxes[3]], plotted, sl, normalised, 1 )
-            cut_error         = np.sqrt(ref_error)
+
+            ref_error         = peak_profile(source, [boxes[0], boxes[1]], boxes[4] , [boxes[2], boxes[3]], plotted, sl, normalised , nbins)
+            cut_error         = np.sqrt(ref_error) / np.sqrt(normalised)
 
 
 
@@ -195,7 +214,7 @@ def profile(save_path, fits_files, output_gif_path):
             # y_cut   = affine(x_cut, x_psr, 0., y_psr, 0.)
 
             if(plotted.find('y') != -1):
-                plt.savefig(output_gif_path + fits_files[fl][:-6] + '_slice' + str(sl) + '.png', dpi=100)
+                plt.savefig(output_gif_path + fits_files[fl][:-6] + '_slice' + slices_lables[sl] + '.png', dpi=100)
 
 
             #ax.plot(cut[de:len(cut)-de], color=colors[fl], label=labels[fl], marker="+", markersize=10, linestyle='-' )
@@ -210,7 +229,7 @@ def profile(save_path, fits_files, output_gif_path):
 
 
             ax.fill_between(array_x[de:len(cut)-de], [a - b for a, b in zip(cut[de:len(cut)-de], cut_error[de:len(cut)-de])], [a + b for a, b in zip(cut[de:len(cut)-de], cut_error[de:len(cut)-de])], alpha = 0.3 )
-            ax.errorbar(array_x[de:len(cut)-de], cut[de:len(cut)-de], yerr=cut_error[de:len(cut)-de], color=colors[fl], linestyle='-', linewidth=2, fmt='o', markersize=7 ,capsize=7, capthick=4, label=labels[fl])
+            ax.errorbar(array_x, cut[de:len(cut)-de], yerr=cut_error[de:len(cut)-de], color=colors[fl], linestyle='-', linewidth=2, fmt='o', markersize=7 ,capsize=7, capthick=4, label=labels[fl])
 
 
 
@@ -266,7 +285,7 @@ def profile(save_path, fits_files, output_gif_path):
 
 
         if(plotted.find('n') != -1):
-            plt.savefig(output_gif_path + fits_files[fl][:-6] + '_energy-dependent_profiles_slice' + str(sl) + '.png', dpi=100)
+            plt.savefig(output_gif_path + fits_files[fl][:-6] + '_energy-dependent_profiles_slice' + slices_lables[sl] + '.png', dpi=100)
         else:
             plt.show()
 

@@ -430,6 +430,7 @@ def closest_point(points, x0, y0, x1, y1, nbins):
     line_direction  /= line_length
 
     n_bins           = int(np.ceil(line_length) / nbins)
+    #n_bins             = nbins
 
     # project points on line
     projections      = np.array([(p[0] * line_direction[0] + p[1] * line_direction[1]) for p in points])
@@ -551,10 +552,10 @@ def averaged_profile_with_a_twist(image, x, y, l, L, angle, plotted, slice_nb, n
     if(slice_nb > 2 and slice_nb < 6):
         x1, y1   = poly_points[0][1] + abs(poly_points[0][1] - poly_points[0][2]) /2. , poly_points[1][1] + abs(poly_points[1][1] - poly_points[1][2]) /2.
         x, y     = poly_points[0][0] + abs(poly_points[0][0] - poly_points[0][3]) /2. , poly_points[1][0] + abs(poly_points[1][0] - poly_points[1][3]) /2.
-    if(slice_nb == 6):
+    if(slice_nb == 7):
         x1, y1   = poly_points[0][1] + abs(poly_points[0][1] - poly_points[0][2]) /2. , poly_points[1][1] + abs(poly_points[1][1] - poly_points[1][2]) /2.
         x, y     = poly_points[0][0] + abs(poly_points[0][0] - poly_points[0][3]) /2. , poly_points[1][0] + abs(poly_points[1][0] - poly_points[1][3]) /2.
-    if(slice_nb == 7):
+    if(slice_nb == 6):
         x1, y1 = poly_points[0][1] + abs(poly_points[0][1] - poly_points[0][2]) / 2., poly_points[1][1] - abs(poly_points[1][1] - poly_points[1][2]) / 2.
         x, y     = poly_points[0][0] + abs(poly_points[0][0] - poly_points[0][3]) /2. , poly_points[1][0] - abs(poly_points[1][0] - poly_points[1][3]) /2.
 
@@ -568,7 +569,8 @@ def averaged_profile_with_a_twist(image, x, y, l, L, angle, plotted, slice_nb, n
 
     # Average data perpendicular to profile
     for i in enumerate(data):
-        data[i[0]] = np.nanmean(data[i[0]])
+        # data[i[0]] = np.nanmean(data[i[0]])
+        data[i[0]]   = np.nansum(data[i[0]])
 
     if(plotted.find('y') != -1):
         # Plot

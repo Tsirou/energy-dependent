@@ -13,11 +13,12 @@ bkg_option        = ""
 
 #==============================================================================
 # Input arguments :
-# 0              : python [command]
-# 1              : analysis [names]
-# 2              : component_list_index_start [main]
-# 3              : component_list_index_end [main]
-# 4              ; nb_of_slice [names]
+# 0               : python [command]
+# 1               : analysis [names]
+# 2               : component_list_index_start [main]
+# 3               : component_list_index_end [main]
+# 4               : sliced_selection [names]
+# 5               : nb_of_slice [names]
 #==============================================================================
 
 #==============================================================================
