@@ -24,8 +24,13 @@ from scipy import interpolate
 
 
 
-fits_files       = []
-fits_files_ex    = []
+# This is a very specific module for analysising a pre-determined region slicing configuration. TODO : use it as an inspiration for computing more general profiles?
+
+
+fits_files         = []
+fits_files_ex      = []
+fits_files_bkg_tmp = []
+
 
 zoom             = "all_n"
 
@@ -33,39 +38,44 @@ slices_lables    = ["I-1", "I-2", "I-3", "II-1", "II-2", "II.3", "I", "II"]
 
 
 # labels             = [" > 0.3 TeV", "[0.3 - 0.6] TeV", "[0.6 - 0.9] TeV", "[0.9 - 3.0] TeV", " > 3.0 TeV"]
+# labels             = ["[0.3 - 0.6] TeV", "[0.6 - 1.2] TeV", "[1.2 - 2.4] TeV", " > 2.4 TeV", "[0.3 - 100] TeV"]
+# number_of_analyses = [0, names.nb_pa_analyses]
+# last_a             = 1
 
-labels             = ["[0.3 - 0.6] TeV", "[0.6 - 1.2] TeV", "[1.2 - 2.4] TeV", " > 2.4 TeV", "[0.3 - 100] TeV"]
-number_of_analyses = [0, names.nb_pa_analyses]
-last_a             = 1
+labels             = ["[2.4 - 4.8] TeV", "[4.8 - 9.6] TeV", " > 9.6 TeV"]
+number_of_analyses = [6, names.nb_pa_analyses]
+last_a             = 0
 
-# labels             = ["[2.4 - 4.8] TeV", "[4.8 - 9.6] TeV", " > 9.6 TeV"]
-# number_of_analyses = [6, names.nb_pa_analyses]
-# last_a             = 0
-
-# labels             = ["[4 - 30] TeV", "[4 - 10] TeV", " [10 - 20] TeV"]
+# # labels             = ["[4 - 30] TeV", "[4 - 10] TeV", " [10 - 20] TeV"]
 # labels             = ["[4 - 10] TeV", " [10 - 20] TeV"]
-# number_of_analyses = [4,6]#[1,3] #[3, 6]
+# number_of_analyses = [4, 6] #[1,3] #[3, 6]
 # last_a             = 0
 
 save_path        = names.path_template[0]
 output_gif_path  = names.path[0]
 
-label_kind       = "$N_{ON}$ per total excess " #(x 10$^{-4}$) "
-for f in range (number_of_analyses[0], number_of_analyses[1]):
+#label_kind       = "$N_{ON}$ per total excess " # (x 10$^{-4}$) "
+for f  in range (number_of_analyses[0], number_of_analyses[1]):
     fits_files.append(names.filename_gamma[f])
+
 files_fits         = len(fits_files) - last_a
 
 
-#label_kind     = "Excess"
+label_kind     = "Excess per total excess"
 for f in range (number_of_analyses[0], number_of_analyses[1]):
     fits_files_ex.append(names.filename_excess[f])
+
+for f in range (number_of_analyses[0], number_of_analyses[1]):
+    fits_files_bkg_tmp.append(names.filename_bkg[f])
+
+
 
 g1               = []
 
 
 
 
-def profile(save_path, fits_files, output_gif_path):
+def profile_countmap(save_path, fits_files, output_gif_path):
     ra_psr   = 228.4818
     dec_psr  = -59.1358
     glon_psr = 320.3208
@@ -298,6 +308,243 @@ def profile(save_path, fits_files, output_gif_path):
     return
 
 
+def profile_excessmap(save_path, fits_files, output_gif_path):
+    ra_psr   = 228.4818
+    dec_psr  = -59.1358
+    glon_psr = 320.3208
+    glat_psr = -1.1619
+
+    hdu_gam = fits.open(names.path_template[names.analysis] + names.filename_gamma[names.analysis])
+
+    header = hdu_gam[names.hdu_ext].header
+    w = wcs.WCS(header)
+
+    w.wcs.ctype = ["RA---GLS", "DEC--GLS"]
+    coord1 = ra_psr
+    coord2 = dec_psr
+
+    x_psr, y_psr = w.wcs_world2pix(coord1, coord2, names.random_convert_shift)
+
+    hdu_gam.close()
+    plt.clf()
+
+    colors = ["cornflowerblue", "springgreen", "orange", "indianred", "yellow"]
+    #
+
+    for sl in range(0, len(names.x_slice)):
+
+        progress(sl, len(names.x_slice), 'slice ' + str(sl))
+
+        boxes = [names.x_slice[sl], names.y_slice[sl], names.L_slice[sl], names.l_slice[sl], names.dev_slice[sl]]
+
+        peak           = [names.x_slice[sl], names.y_slice[sl]]
+        peak_x_pix     = peak[0]
+        peak_y_pix     = peak[1]
+        p_cel1, p_cel2 = w.wcs_pix2world(peak_x_pix, peak_y_pix, names.random_convert_shift)
+
+
+
+
+
+        reset_display()
+
+        font   = ['black', 'white'] # ['white', 'black', 1] #
+
+        if(font[0].find('black') != -1 ):
+            plt.style.use('dark_background')
+
+        fig = plt.figure()
+        fig.set_size_inches(20,15)
+
+        ax = fig.add_subplot(111)
+
+        ax.patch.set_facecolor(font[0])
+        ax.spines['top'].set_color(font[1])
+        ax.spines['bottom'].set_color(font[1])
+        ax.spines['left'].set_color(font[1])
+        ax.spines['right'].set_color(font[1])
+        ax.xaxis.label.set_color(font[1])
+
+        ax.set_title('MSH 15-5$\mathit{2}$ energy-dependent profiles', fontsize=13, color=font[1])
+        ax.set_xlabel('Distance to PSR B1509-58 (arcmin)')
+        ax.set_ylabel(label_kind)
+
+        #ax.axhline(y = 0., color=font[1], linestyle = "-")
+
+        source    = []
+
+        for fl in range(0, files_fits):
+
+            list_model_path = save_path + fits_files[fl]
+            hdu_gif_model   = fits.open(list_model_path)
+
+
+            list_model_path_ex = save_path + fits_files_ex[fl]
+            hdu_gif_model_ex   = fits.open(list_model_path_ex)
+
+
+            list_model_path_bkg = save_path + fits_files_bkg_tmp[fl]
+            hdu_gif_model_bkg   = fits.open(list_model_path_bkg)
+
+            sherpa.load_image(list_model_path_ex)
+            sherpa.notice2d("box(" + str(boxes[0]) + "," + str(boxes[1]) + "," + str(boxes[2]) + "," + str(boxes[3]) + "," + str(boxes[4]) + ")")
+
+            list_model_path_ex = list_model_path_ex[:-6] + "slice_" + str(sl) + ".fits"
+            sherpa.save_image(list_model_path_ex, clobber=True)
+            hdu_gif_model_ex.close()
+
+
+            sherpa.load_image(list_model_path_bkg)
+            sherpa.notice2d("box(" + str(boxes[0]) + "," + str(boxes[1]) + "," + str(boxes[2]) + "," + str(boxes[3]) + "," + str(boxes[4]) + ")")
+
+            list_model_path_bkg = list_model_path_bkg[:-6] + "slice_" + str(sl) + ".fits"
+            sherpa.save_image(list_model_path_bkg, clobber=True)
+            hdu_gif_model_bkg.close()
+
+
+            sherpa.load_image(list_model_path)
+
+            sherpa.notice2d("box(" + str(boxes[0]) + "," + str(boxes[1]) + "," + str(boxes[2]) + "," + str(boxes[3]) + "," + str(boxes[4]) + ")")
+            list_model_path    = list_model_path[:-6] + "slice_" + str(sl) + ".fits"
+            sherpa.save_image(list_model_path, clobber=True)
+
+
+            hdu_gif_model_ex = fits.open(list_model_path_ex)
+
+            normalised       = np.sum(np.nan_to_num(hdu_gif_model_ex[names.hdu_ext-1].data), axis=None)
+
+            hdu_gif_model_ex.close()
+
+            hdu_gif_model    = fits.open(list_model_path_ex)
+            source           = hdu_gif_model[names.hdu_ext - 1].data
+            source           = np.nan_to_num(source)
+
+
+            hdu_gif_model_g  = fits.open(list_model_path)
+            source_g         = hdu_gif_model_g[names.hdu_ext - 1].data
+            source_g           = np.nan_to_num(source_g)
+
+
+            hdu_gif_model_b  = fits.open(list_model_path_bkg)
+            source_b         = hdu_gif_model_b[names.hdu_ext - 1].data
+            source_b          = np.nan_to_num(source_b)
+
+
+
+            img = ndimage.gaussian_filter(source, sigma=0, order=0)
+
+            plotted     = 'n'
+            normalised  = normalised #* 1.0e-1
+            nbins       = 3.
+            de          = 0 #2
+
+
+
+            cut               = peak_profile(source, [boxes[0], boxes[1]], boxes[4] , [boxes[2], boxes[3]], plotted, sl, normalised, nbins )
+            ref               = peak_profile(source, [boxes[0], boxes[1]], boxes[4] , [boxes[2], boxes[3]], plotted, sl, normalised, 1 )
+
+            # To be checked... The formula seems a bit suspicious.
+            ref_error         = peak_profile(source_g + ( (source_g - source)**3 / source_b**2), [boxes[0], boxes[1]], boxes[4] , [boxes[2], boxes[3]], plotted, sl, normalised , nbins)
+            cut_error         = np.sqrt(ref_error) / np.sqrt(normalised)
+
+
+
+            # x_plane  = np.arange(401)
+            # x1_plane = 145.74
+            # x2_plane = 383.74
+            # y1_plane = 373.41
+            # y2_plane = 228.31
+            # y_plane = affine(x_plane, x1_plane, y1_plane, x2_plane, y2_plane)
+            #
+            # x_cut   = np.arange(401)
+            # y_cut   = affine(x_cut, x_psr, 0., y_psr, 0.)
+
+            if(plotted.find('y') != -1):
+                plt.savefig(output_gif_path + fits_files[fl][:-6] + '_slice_exc' + slices_lables[sl] + '.png', dpi=100)
+
+
+            #ax.plot(cut[de:len(cut)-de], color=colors[fl], label=labels[fl], marker="+", markersize=10, linestyle='-' )
+            # ax.plot([a - b for a, b in zip(cut, cut_error)], color=colors[fl], linestyle='--', alpha=0.5)
+            # ax.plot([a + b for a, b in zip(cut, cut_error)], color=colors[fl], linestyle='--', alpha=0.5)
+            # #ax.plot([a - b for a, b in zip(cut, np.sqrt(cut))], color=colors[fl], linestyle='--', alpha=0.5)
+            #ax.plot([a + b for a, b in zip(cut, np.sqrt(cut))], color=colors[fl], linestyle='--', alpha=0.5)
+
+
+            array_x_ref   = np.arange(de, len(ref)-de)
+            array_x       = np.arange(de, len(cut)-de)
+
+
+            ax.fill_between(array_x[de:len(cut)-de], [a - b for a, b in zip(cut[de:len(cut)-de], cut_error[de:len(cut)-de])], [a + b for a, b in zip(cut[de:len(cut)-de], cut_error[de:len(cut)-de])], alpha = 0.3 )
+            ax.errorbar(array_x, cut[de:len(cut)-de], yerr=cut_error[de:len(cut)-de], color=colors[fl], linestyle='-', linewidth=2, fmt='o', markersize=7 ,capsize=7, capthick=4, label=labels[fl])
+
+
+
+        ax.legend(fontsize=15, numpoints=1, loc=1)
+
+        ax.tick_params(axis='both', which='both', labelsize=20, color=font[1])
+
+
+        ticks          = ax.get_xticks()
+        peak_y         = [peak_y_pix for xp in ticks]
+        cel1, cel2     = w.wcs_pix2world(ticks , peak_y, names.random_convert_shift)
+
+
+
+        ref         = w.wcs_pix2world(0, 0, names.random_convert_shift)
+        deg         = w.wcs_pix2world(boxes[3], 0, names.random_convert_shift)
+        length_cel1 = abs(deg[0] - ref[0])
+
+        ref         = w.wcs_pix2world(0, 0, names.random_convert_shift)
+        deg         = w.wcs_pix2world(0, peak_y_pix, names.random_convert_shift)
+        length_cel2 = abs(deg[1] - ref[1])
+
+        margin      = ax.margins()
+
+
+        ticks_cel = []
+
+
+        # ticks_cel.append(0.0)
+        for e in range(1,len(array_x)):
+            temp_val   = ( ((array_x[e]) * nbins * 0.01 * 60.)  - (len(array_x_ref)  * 0.01 * 60.)/2. )
+            ticks_cel.append(round(temp_val,2))
+        ticks_cel.append(((len(array_x_ref)) * 0.01 * 60.))
+
+        ax.set_xticks(array_x)
+
+        # fig.canvas.draw()
+        # labels_x = []
+        # labels_x.append(u'')
+        # for ele in ticks_cel[::2]:
+        #     labels_x.append(str(ele))
+        # labels_x.append(u'')
+        #
+        # ticks_cel = labels_x
+
+        ax.set_xticklabels(ticks_cel)
+        # ax.set_xscale('linear')
+
+        ax.axvline(x=(len(array_x)/2. - 1), color=font[1], linestyle=":")
+
+        # plt._show()
+
+
+
+        if(plotted.find('n') != -1):
+            plt.savefig(output_gif_path + fits_files[fl][:-6] + '_profiles_excess_slice_HE' + slices_lables[sl] + '.png', dpi=100)
+        else:
+            plt.show()
+
+        plt.clf()
+
+        hdu_gif_model.close()
+        hdu_gif_model_ex.close()
+
+
+    return
+
+
+
 def fits_cuts(save_path, output_gif_path, fits_files,zoom):
     gif_model = []
 
@@ -479,5 +726,5 @@ def fits_cuts(save_path, output_gif_path, fits_files,zoom):
 ################################################################################################
 ################################################################################################
 
-profile(save_path,fits_files,output_gif_path)
+profile_countmap(save_path,fits_files,output_gif_path)
 #fits_cuts(save_path,output_gif_path,fits_files,zoom)
