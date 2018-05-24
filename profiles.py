@@ -430,21 +430,22 @@ def profile_excessmap(save_path, fits_files, output_gif_path):
             source_b          = np.nan_to_num(source_b)
 
 
-
             img = ndimage.gaussian_filter(source, sigma=0, order=0)
 
-            plotted     = 'n'
+            plotted     = 'y'
             normalised  = normalised #* 1.0e-1
             nbins       = 3.
             de          = 0 #2
 
 
+            print(plotted)
 
             cut               = peak_profile(source, [boxes[0], boxes[1]], boxes[4] , [boxes[2], boxes[3]], plotted, sl, normalised, nbins )
             ref               = peak_profile(source, [boxes[0], boxes[1]], boxes[4] , [boxes[2], boxes[3]], plotted, sl, normalised, 1 )
 
             # To be checked... The formula seems a bit suspicious.
-            ref_error         = peak_profile(source_g + ( (source_g - source)**3 / source_b**2), [boxes[0], boxes[1]], boxes[4] , [boxes[2], boxes[3]], plotted, sl, normalised , nbins)
+            #ref_error         = peak_profile(source_g + ( (source_g - source)**3 / source_b**2), [boxes[0], boxes[1]], boxes[4] , [boxes[2], boxes[3]], plotted, sl, normalised , nbins)
+            ref_error         = peak_profile(source_g + ( (source_b**2) / (source_g - source) ), [boxes[0], boxes[1]], boxes[4] , [boxes[2], boxes[3]], plotted, sl, normalised , nbins)
             cut_error         = np.sqrt(ref_error) / np.sqrt(normalised)
 
 
